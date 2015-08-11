@@ -10,14 +10,7 @@
             Asset = new T {Pointer = Memory.ReadLong(_pointer + 8)};
         }
 
-        public XAssetType Type
-        {
-            get
-            {
-                long result = Memory.ReadInt(_pointer);
-                return (XAssetType) result;
-            }
-        }
+        public XAssetType Type => (XAssetType) Memory.ReadInt(_pointer);
 
         public T Asset { get; }
     }
