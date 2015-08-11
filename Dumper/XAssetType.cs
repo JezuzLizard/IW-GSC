@@ -2,6 +2,6 @@
 {
     public enum XAssetType
     {
-        ScriptFile
+        ScriptFile = 0x2D
     }
 }

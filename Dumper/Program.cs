@@ -30,10 +30,12 @@ namespace Dumper
             }
             Console.WriteLine("Waiting for game...");
             while (!Memory.ConnectToGame(gameId)) ;
+            Console.Clear();
+            Offsets.SetupOffsetsForGameId(gameId);
             var assets = new AssetsReader<ScriptFile>(XAssetType.ScriptFile).ReadAssets();
             foreach (var scriptFile in assets)
             {
-                
+                Console.WriteLine(scriptFile.Name);
             }
             Console.ReadKey();
         }

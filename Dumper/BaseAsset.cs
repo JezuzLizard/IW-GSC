@@ -2,10 +2,13 @@
 {
     public abstract class BaseAsset
     {
-        public int Pointer { get; set; }
+        public long Pointer { get; set; }
 
-        public string Name { get; }
+        public string Name
+        {
+            get { return Memory.ReadString(Pointer); }
+        }
 
-        public int Length { get; }
+        public abstract int Length { get; }
     }
 }

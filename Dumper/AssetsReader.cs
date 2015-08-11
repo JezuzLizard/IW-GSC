@@ -14,9 +14,9 @@ namespace Dumper
         public List<T> ReadAssets()
         {
             var assets = new List<T>();
-            for (int i = 0; i < 4096; i++)
+            for (int i = 0; i < 73727; i++)
             {
-                var xAsset = new XAsset<T>(i);
+                var xAsset = new XAsset<T>(Offsets.AssetsPool + i * 16);
                 if (xAsset.Type == _type)
                 {
                     assets.Add(xAsset.Asset);

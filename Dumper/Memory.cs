@@ -8,16 +8,17 @@ using Binarysharp.MemoryManagement.Helpers;
 
 namespace Dumper
 {
+    //TODO make generic read method
     internal static class Memory
     {
         [DllImport("kernel32.dll")]
         private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
         [DllImport("kernel32.dll")]
-        private static extern bool ReadProcessMemory(IntPtr hProcess, int lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, [Out] int lpNumberOfBytesRead);
+        private static extern bool ReadProcessMemory(IntPtr hProcess, long lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, [Out] int lpNumberOfBytesRead);
 
         [DllImport("kernel32.dll")]
-        private static extern bool WriteProcessMemory(IntPtr hProcess, int lpBaseAddress, byte[] lpBuffer, uint nSize, [Out] int lpNumberOfBytesWritten);
+        private static extern bool WriteProcessMemory(IntPtr hProcess, long lpBaseAddress, byte[] lpBuffer, uint nSize, [Out] int lpNumberOfBytesWritten);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
@@ -45,41 +46,48 @@ namespace Dumper
             return false;
         }
 
-        public static void Free(int pointer, int length)
+        public static void Free(long pointer, int length)
         {
             VirtualFreeEx(_handle, (IntPtr)pointer, (uint)length, 0x8000);
         }
 
-        public static void CreateRemoteThread(int pointer)
+        public static void CreateRemoteThread(long pointer)
         {
             CreateRemoteThread(_handle, IntPtr.Zero, 0, (IntPtr)pointer, IntPtr.Zero, 0, Bytes);
         }
 
-        public static int Malloc(int length)
+        public static int Malloc(long length)
         {
             return (int)VirtualAllocEx(_handle, IntPtr.Zero, (uint)length, 0x3000, 0x40);
         }
 
-        public static void WriteInt(int pointer, int value)
+        public static void WriteInt(long pointer, int value)
         {
             Write(pointer, BitConverter.GetBytes(value));
         }
 
-        public static int ReadInt(int pointer)
+        public static long ReadLong(long pointer)
+        {
+            var buffer = new byte[8];
+            ReadProcessMemory(_handle, pointer, buffer, 8, Bytes);
+            return BitConverter.ToInt64(buffer, 0);
+        }
+
+        public static int ReadInt(long pointer)
         {
             var buffer = new byte[4];
             ReadProcessMemory(_handle, pointer, buffer, 4, Bytes);
             return BitConverter.ToInt32(buffer, 0);
         }
 
-        public static byte[] Read(int pointer, int length)
+        public static byte[] Read(long pointer, int length)
         {
             var buffer = new byte[length];
             ReadProcessMemory(_handle, pointer, buffer, buffer.Length, Bytes);
             return buffer;
         }
 
-        public static string ReadString(int pointer)
+        public static string ReadString(long pointer)
         {
             var strPointer = ReadInt(pointer);
             var sb = new StringBuilder();
@@ -91,7 +99,7 @@ namespace Dumper
             return sb.ToString();
         }
 
-        public static void Write(int pointer, byte[] b)
+        public static void Write(long pointer, byte[] b)
         {
             uint oldprotect;
             VirtualProtectEx(_handle, (IntPtr)pointer, (uint)b.Length, 0x40, out oldprotect);

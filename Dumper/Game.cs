@@ -9,7 +9,7 @@ namespace Dumper
             switch (gameId)
             {
                 case GameId.Ghost:
-                    return "uw6mp";
+                    return "iw6mp64_ship";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gameId), gameId, null);
             }
@@ -17,7 +17,7 @@ namespace Dumper
 
         public enum GameId
         {
-            Ghost = 1
+            Ghost
         }
     }
 }
