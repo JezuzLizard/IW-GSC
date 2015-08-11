@@ -1,27 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Dumper
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static string StartupPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+        private static void Main(string[] args)
         {
             Console.WriteLine("Select game id...");
-            Console.WriteLine("1. Ghost");
-            int result = 0;
-            Game.GameId gameId = Game.GameId.Ghost;
+            Console.WriteLine("1. Ghosts_MP");
+            var result = 0;
+            var gameId = Game.GameId.Ghosts_MP;
             if (int.TryParse(Console.ReadLine(), out result))
             {
                 switch (result)
                 {
                     case 1:
-                        gameId = Game.GameId.Ghost;
+                        gameId = Game.GameId.Ghosts_MP;
                         break;
 
                     default:
@@ -34,8 +32,14 @@ namespace Dumper
             while (!Memory.ConnectToGame(gameId)) ;
             Console.Clear();
             Offsets.SetupOffsetsForGameId(gameId);
+            DumpGSC();
+            Console.ReadKey();
+        }
+
+        private static void DumpGSC()
+        {
             var assets = new AssetsReader<ScriptFile>(XAssetType.ScriptFile).ReadAssets();
-            string assetsPath = Path.Combine(StartupPath, "Assets");
+            var assetsPath = Path.Combine(StartupPath, "Assets");
             if (!Directory.Exists(assetsPath))
             {
                 Directory.CreateDirectory(assetsPath);
@@ -48,9 +52,7 @@ namespace Dumper
                     file.Write(scriptFile.ByteCode, 0, scriptFile.ByteCode.Length);
                 }
             }
-            Console.ReadKey();
+            Console.WriteLine("GSC files successfully dumped!");
         }
-
-        private static string StartupPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     }
 }

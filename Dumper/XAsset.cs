@@ -7,7 +7,7 @@
         public XAsset(long pointer)
         {
             _pointer = pointer;
-            Asset = new T { Pointer = Memory.ReadLong(_pointer + 8) };
+            Asset = new T {Pointer = Memory.ReadLong(_pointer + 8)};
         }
 
         public XAssetType Type
