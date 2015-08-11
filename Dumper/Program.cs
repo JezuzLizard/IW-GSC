@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -33,11 +35,22 @@ namespace Dumper
             Console.Clear();
             Offsets.SetupOffsetsForGameId(gameId);
             var assets = new AssetsReader<ScriptFile>(XAssetType.ScriptFile).ReadAssets();
+            string assetsPath = Path.Combine(StartupPath, "Assets");
+            if (!Directory.Exists(assetsPath))
+            {
+                Directory.CreateDirectory(assetsPath);
+            }
             foreach (var scriptFile in assets)
             {
-                Console.WriteLine(scriptFile.Name);
+                using (var file = File.Create(Path.Combine(assetsPath, scriptFile.Name)))
+                {
+                    file.Write(scriptFile.Buffer, 0, scriptFile.Buffer.Length);
+                    file.Write(scriptFile.ByteCode, 0, scriptFile.ByteCode.Length);
+                }
             }
             Console.ReadKey();
         }
+
+        private static string StartupPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
     }
 }
