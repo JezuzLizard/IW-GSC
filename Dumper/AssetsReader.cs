@@ -4,8 +4,8 @@ namespace Dumper
 {
     public class AssetsReader<T> where T : BaseAsset
     {
-        private readonly XAssetType _type;
         private readonly Native _native;
+        private readonly XAssetType _type;
 
         public AssetsReader(XAssetType type, Native native)
         {

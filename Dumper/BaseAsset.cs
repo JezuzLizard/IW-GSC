@@ -12,7 +12,7 @@ namespace Dumper
             Native = native;
             Pointer = pointer;
         }
-        
+
         public string Name => Path.GetFileName(Native.ReadString(Pointer));
         public abstract int Length { get; }
 

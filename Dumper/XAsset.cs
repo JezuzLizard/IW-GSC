@@ -2,8 +2,8 @@
 {
     public class XAsset<T> where T : BaseAsset
     {
-        private readonly long _pointer;
         private readonly Native _native;
+        private readonly long _pointer;
 
         public XAsset(Native native, long pointer)
         {
@@ -12,8 +12,7 @@
             Asset = AssetsCreator.CreateAsset<T>(_native, _native.ReadLong(_pointer + 8));
         }
 
-        public XAssetType Type => (XAssetType)_native.ReadInt(_pointer);
-
+        public XAssetType Type => (XAssetType) _native.ReadInt(_pointer);
         public T Asset { get; }
     }
 }

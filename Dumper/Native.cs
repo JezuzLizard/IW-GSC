@@ -11,6 +11,7 @@ namespace Dumper
     {
         private const int Bytes = 0;
         private IntPtr _handle;
+        public long AssetsPool { get; private set; }
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -110,13 +111,12 @@ namespace Dumper
             WriteProcessMemory(_handle, pointer, b, (uint) b.Length, Bytes);
         }
 
-        public long AssetsPool { get; private set; }
-
         private void SetupOffsetsForGameId(Game.GameId gameId)
         {
             switch (gameId)
             {
                 case Game.GameId.Ghosts_MP:
+                case Game.GameId.Ghosts_Server:
                     AssetsPool = FindPattern(0x140001000, 0x145000000, "\x4C\x8D\x05\x00\x00\x00\x00\xF7\xE3",
                         "xxx????xx");
                     var offset = BitConverter.ToUInt32(Read(AssetsPool + 3, 4), 0);

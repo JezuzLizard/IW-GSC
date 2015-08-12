@@ -43,11 +43,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssetsCreator.cs" />
     <Compile Include="AssetsReader.cs" />
     <Compile Include="BaseAsset.cs" />
     <Compile Include="Game.cs" />
-    <Compile Include="Memory.cs" />
-    <Compile Include="Offsets.cs" />
+    <Compile Include="Native.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptFile.cs" />

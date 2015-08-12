@@ -11,7 +11,7 @@ namespace Dumper
         private static void Main(string[] args)
         {
             Console.WriteLine("Select game id...");
-            Console.WriteLine("1. Ghosts_MP");
+            Console.WriteLine("1. Ghosts MP\n2. Ghosts Server");
             var result = 0;
             var gameId = Game.GameId.Ghosts_MP;
             if (int.TryParse(Console.ReadLine(), out result))
@@ -22,6 +22,10 @@ namespace Dumper
                         gameId = Game.GameId.Ghosts_MP;
                         break;
 
+                    case 2:
+                        gameId = Game.GameId.Ghosts_Server;
+                        break;
+
                     default:
                         Console.WriteLine("Game is not supported");
                         Console.ReadKey();
@@ -29,7 +33,7 @@ namespace Dumper
                 }
             }
             Console.WriteLine("Waiting for game...");
-            Native native = new Native();
+            var native = new Native();
             while (!native.ConnectToGame(gameId)) ;
             Console.Clear();
             DumpGSC(native);
@@ -48,7 +52,7 @@ namespace Dumper
             {
                 using (var file = File.Create(Path.Combine(assetsPath, scriptFile.Name)))
                 {
-                    file.Write(scriptFile.Buffer, 0, scriptFile.Buffer.Length);
+                    //file.Write(scriptFile.Buffer, 0, scriptFile.Buffer.Length);
                     file.Write(scriptFile.ByteCode, 0, scriptFile.ByteCode.Length);
                 }
             }

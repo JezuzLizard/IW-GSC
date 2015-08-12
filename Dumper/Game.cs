@@ -6,7 +6,8 @@ namespace Dumper
     {
         public enum GameId
         {
-            Ghosts_MP
+            Ghosts_MP,
+            Ghosts_Server
         }
 
         public static string ProcessForGameId(GameId gameId)
@@ -15,6 +16,8 @@ namespace Dumper
             {
                 case GameId.Ghosts_MP:
                     return "iw6mp64_ship";
+                case GameId.Ghosts_Server:
+                    return "iw6_ds";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gameId), gameId, null);
             }
