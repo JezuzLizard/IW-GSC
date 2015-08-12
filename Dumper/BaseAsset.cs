@@ -4,8 +4,16 @@ namespace Dumper
 {
     public abstract class BaseAsset
     {
-        public long Pointer { get; set; }
-        public string Name => Path.GetFileName(Memory.ReadString(Pointer));
+        protected readonly Native Native;
+        protected readonly long Pointer;
+
+        protected BaseAsset(Native native, long pointer)
+        {
+            Native = native;
+            Pointer = pointer;
+        }
+        
+        public string Name => Path.GetFileName(Native.ReadString(Pointer));
         public abstract int Length { get; }
 
         public override string ToString()

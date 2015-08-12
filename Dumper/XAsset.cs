@@ -1,16 +1,18 @@
 ﻿namespace Dumper
 {
-    public class XAsset<T> where T : BaseAsset, new()
+    public class XAsset<T> where T : BaseAsset
     {
         private readonly long _pointer;
+        private readonly Native _native;
 
-        public XAsset(long pointer)
+        public XAsset(Native native, long pointer)
         {
+            _native = native;
             _pointer = pointer;
-            Asset = new T {Pointer = Memory.ReadLong(_pointer + 8)};
+            Asset = AssetsCreator.CreateAsset<T>(_native, _native.ReadLong(_pointer + 8));
         }
 
-        public XAssetType Type => (XAssetType) Memory.ReadInt(_pointer);
+        public XAssetType Type => (XAssetType)_native.ReadInt(_pointer);
 
         public T Asset { get; }
     }

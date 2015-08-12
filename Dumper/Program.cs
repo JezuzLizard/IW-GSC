@@ -29,16 +29,16 @@ namespace Dumper
                 }
             }
             Console.WriteLine("Waiting for game...");
-            while (!Memory.ConnectToGame(gameId)) ;
+            Native native = new Native();
+            while (!native.ConnectToGame(gameId)) ;
             Console.Clear();
-            Offsets.SetupOffsetsForGameId(gameId);
-            DumpGSC();
+            DumpGSC(native);
             Console.ReadKey();
         }
 
-        private static void DumpGSC()
+        private static void DumpGSC(Native native)
         {
-            var assets = new AssetsReader<ScriptFile>(XAssetType.ScriptFile).ReadAssets();
+            var assets = new AssetsReader<ScriptFile>(XAssetType.ScriptFile, native).ReadAssets();
             var assetsPath = Path.Combine(StartupPath, "Assets");
             if (!Directory.Exists(assetsPath))
             {

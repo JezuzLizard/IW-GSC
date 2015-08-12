@@ -7,10 +7,10 @@ using System.Text;
 namespace Dumper
 {
     //TODO make generic read method
-    internal static class Memory
+    public class Native
     {
         private const int Bytes = 0;
-        private static IntPtr _handle;
+        private IntPtr _handle;
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -38,59 +38,60 @@ namespace Dumper
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern int VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint dwFreeType);
 
-        public static bool ConnectToGame(Game.GameId gameId)
+        public bool ConnectToGame(Game.GameId gameId)
         {
             var process = Process.GetProcessesByName(Game.ProcessForGameId(gameId)).FirstOrDefault();
             if (process != null)
             {
                 _handle = OpenProcess(0x1f0fff, false, process.Id);
+                SetupOffsetsForGameId(gameId);
                 return true;
             }
             return false;
         }
 
-        public static void Free(long pointer, int length)
+        public void Free(long pointer, int length)
         {
             VirtualFreeEx(_handle, (IntPtr) pointer, (uint) length, 0x8000);
         }
 
-        public static void CreateRemoteThread(long pointer)
+        public void CreateRemoteThread(long pointer)
         {
             CreateRemoteThread(_handle, IntPtr.Zero, 0, (IntPtr) pointer, IntPtr.Zero, 0, Bytes);
         }
 
-        public static int Malloc(long length)
+        public int Malloc(long length)
         {
             return (int) VirtualAllocEx(_handle, IntPtr.Zero, (uint) length, 0x3000, 0x40);
         }
 
-        public static void WriteInt(long pointer, int value)
+        public void WriteInt(long pointer, int value)
         {
             Write(pointer, BitConverter.GetBytes(value));
         }
 
-        public static long ReadLong(long pointer)
+        public long ReadLong(long pointer)
         {
             var buffer = new byte[8];
             ReadProcessMemory(_handle, pointer, buffer, 8, Bytes);
             return BitConverter.ToInt64(buffer, 0);
         }
 
-        public static int ReadInt(long pointer)
+        public int ReadInt(long pointer)
         {
             var buffer = new byte[4];
             ReadProcessMemory(_handle, pointer, buffer, 4, Bytes);
             return BitConverter.ToInt32(buffer, 0);
         }
 
-        public static byte[] Read(long pointer, int length)
+        public byte[] Read(long pointer, int length)
         {
             var buffer = new byte[length];
             ReadProcessMemory(_handle, pointer, buffer, buffer.Length, Bytes);
             return buffer;
         }
 
-        public static string ReadString(long pointer)
+        public string ReadString(long pointer)
         {
             var strPointer = ReadInt(pointer);
             var sb = new StringBuilder();
@@ -102,11 +103,45 @@ namespace Dumper
             return sb.ToString();
         }
 
-        public static void Write(long pointer, byte[] b)
+        public void Write(long pointer, byte[] b)
         {
             uint oldprotect;
             VirtualProtectEx(_handle, (IntPtr) pointer, (uint) b.Length, 0x40, out oldprotect);
             WriteProcessMemory(_handle, pointer, b, (uint) b.Length, Bytes);
+        }
+
+        public long AssetsPool { get; private set; }
+
+        private void SetupOffsetsForGameId(Game.GameId gameId)
+        {
+            switch (gameId)
+            {
+                case Game.GameId.Ghosts_MP:
+                    AssetsPool = FindPattern(0x140001000, 0x145000000, "\x4C\x8D\x05\x00\x00\x00\x00\xF7\xE3",
+                        "xxx????xx");
+                    var offset = BitConverter.ToUInt32(Read(AssetsPool + 3, 4), 0);
+                    AssetsPool += offset + 7;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(gameId), gameId, null);
+            }
+        }
+
+        private long FindPattern(long startAddress, long endAddress, string pattern, string mask)
+        {
+            var lpBuffer = new byte[endAddress - startAddress];
+            lpBuffer = Read(startAddress, lpBuffer.Length);
+            for (var i = 0; i < lpBuffer.Length; i++)
+            {
+                if (
+                    pattern.TakeWhile((t, j) => (lpBuffer[i + j] == t) || (mask[j] == '?'))
+                        .Where((t, j) => j == (pattern.Length - 1))
+                        .Any())
+                {
+                    return (startAddress + i);
+                }
+            }
+            return -1;
         }
     }
 }

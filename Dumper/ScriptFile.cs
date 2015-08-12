@@ -2,16 +2,16 @@
 {
     public class ScriptFile : BaseAsset
     {
-        public int CompressedLength => Memory.ReadInt(Pointer + 8);
-        public override int Length => Memory.ReadInt(Pointer + 0xC);
-        public int ByteCodeLength => Memory.ReadInt(Pointer + 0x10);
+        public int CompressedLength => Native.ReadInt(Pointer + 8);
+        public override int Length => Native.ReadInt(Pointer + 0xC);
+        public int ByteCodeLength => Native.ReadInt(Pointer + 0x10);
 
         public byte[] Buffer
         {
             get
             {
-                var pointer = Memory.ReadLong(Pointer + 0x18);
-                return Memory.Read(pointer, CompressedLength);
+                var pointer = Native.ReadLong(Pointer + 0x18);
+                return Native.Read(pointer, CompressedLength);
             }
         }
 
@@ -19,9 +19,13 @@
         {
             get
             {
-                var pointer = Memory.ReadLong(Pointer + 0x20);
-                return Memory.Read(pointer, ByteCodeLength);
+                var pointer = Native.ReadLong(Pointer + 0x20);
+                return Native.Read(pointer, ByteCodeLength);
             }
+        }
+
+        public ScriptFile(Native native, long pointer) : base(native, pointer)
+        {
         }
     }
 }
