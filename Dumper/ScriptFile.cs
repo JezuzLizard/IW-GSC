@@ -1,4 +1,6 @@
-﻿namespace Dumper
+﻿using Ionic.Zlib;
+
+namespace Dumper
 {
     public class ScriptFile : BaseAsset
     {
@@ -15,7 +17,7 @@
             get
             {
                 var pointer = Native.ReadLong(Pointer + 0x18);
-                return Native.Read(pointer, CompressedLength);
+                return ZlibStream.UncompressBuffer(Native.Read(pointer, CompressedLength));
             }
         }
 

@@ -52,7 +52,7 @@ namespace Dumper
             {
                 using (var file = File.Create(Path.Combine(assetsPath, scriptFile.Name)))
                 {
-                    //file.Write(scriptFile.Buffer, 0, scriptFile.Buffer.Length);
+                    file.Write(scriptFile.Buffer, 0, scriptFile.Buffer.Length);
                     file.Write(scriptFile.ByteCode, 0, scriptFile.ByteCode.Length);
                 }
             }
