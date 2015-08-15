@@ -1,4 +1,6 @@
-﻿namespace Dumper
+﻿using System;
+
+namespace Dumper
 {
     public class XAsset<T> where T : BaseAsset
     {
@@ -9,10 +11,19 @@
         {
             _native = native;
             _pointer = pointer;
-            Asset = AssetsCreator.CreateAsset<T>(_native, _native.ReadLong(_pointer + 8));
+            Asset = CreateAsset();
         }
 
         public XAssetType Type => (XAssetType) _native.ReadInt(_pointer);
         public T Asset { get; }
+
+        private T CreateAsset()
+        {
+            if (typeof (T) == typeof (ScriptFile))
+            {
+                return (T) (object) new ScriptFile(_native, _native.ReadLong(_pointer + 8));
+            }
+            throw new InvalidOperationException($"Type {typeof (T)} is not supported");
+        }
     }
 }
