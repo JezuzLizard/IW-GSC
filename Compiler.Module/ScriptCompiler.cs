@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Irony.Parsing;
+using Resolver;
 using static Compiler.Module.ScriptGrammarConst;
 
 namespace Compiler.Module
@@ -9,15 +10,17 @@ namespace Compiler.Module
     public class ScriptCompiler
     {
         private readonly List<ScriptFunction> _functions;
+        private readonly BaseResolver _resolver;
         private readonly ParseTree _tree;
 
-        public ScriptCompiler(string path)
+        public ScriptCompiler(string path, BaseResolver resolver)
         {
             var source = File.ReadAllText(path);
             var grammar = new ScriptGrammar();
             var parser = new Parser(grammar);
             _tree = parser.Parse(source);
             _functions = new List<ScriptFunction>();
+            _resolver = resolver;
         }
 
         public byte[] Compile()
@@ -74,6 +77,10 @@ namespace Compiler.Module
                 case MethodThreadCallId:
                     break;
             }
+            if (decTop)
+            {
+                AddOpcode(Opcode.OpDecTop);
+            }
         }
 
         private void CreateFunction(ParseTreeNode node)
@@ -82,13 +89,26 @@ namespace Compiler.Module
             var scriptFunction = new ScriptFunction {FunctionName = name};
             _functions.Add(scriptFunction);
             var parameters =
-                node.ChildNodes.FindAll(e => e.Term.Name == IdentifierId).Select(e => e.Token.ValueString.ToLower());
+                node.ChildNodes.FindAll(e => e.Term.Name == IdentifierId)
+                    .Select(e => e.Token.ValueString.ToLower())
+                    .ToList();
+
+            AddOpcode(Opcode.OpEnd);
             foreach (var parameter in parameters)
             {
                 //TODO support for parameters
             }
+            if (!parameters.Any())
+            {
+                AddOpcode(Opcode.OpCheckclearparams);
+            }
             CompileInternal(node.ChildNodes.Find(e => e.Term.Name == LinesId));
-            AddByteCode(Opcodes.OpEnd);
+            AddOpcode(Opcode.OpEnd);
+        }
+
+        private void AddOpcode(Opcode opcode)
+        {
+            AddByteCode(_resolver.ResolveValueForOpcode(opcode));
         }
 
         private void AddByteCode(params byte[] bytecode)

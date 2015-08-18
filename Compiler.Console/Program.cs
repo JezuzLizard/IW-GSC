@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Compiler.Module;
+using Resolver;
 
 namespace Compiler.Console
 {
-    class Program
+    internal class Program
     {
         [STAThread]
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             using (var dialog = new OpenFileDialog())
             {
@@ -19,7 +16,7 @@ namespace Compiler.Console
                 {
                     return;
                 }
-                var compiler = new ScriptCompiler(dialog.FileName);
+                var compiler = new ScriptCompiler(dialog.FileName, new FakeResolver(false, Game.Ghosts));
                 compiler.Compile();
             }
         }

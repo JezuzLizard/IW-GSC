@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler.Module", "Compiler
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler.Console", "Compiler.Console\Compiler.Console.csproj", "{B9F965C0-430A-473F-B0F8-5AE70E46C6E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resolver", "Resolver\Resolver.csproj", "{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,14 @@ Global
 		{B9F965C0-430A-473F-B0F8-5AE70E46C6E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B9F965C0-430A-473F-B0F8-5AE70E46C6E8}.Release|x64.ActiveCfg = Release|Any CPU
 		{B9F965C0-430A-473F-B0F8-5AE70E46C6E8}.Release|x64.Build.0 = Release|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Debug|x64.Build.0 = Debug|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Release|x64.ActiveCfg = Release|Any CPU
+		{7D4D4F12-8FF8-484D-A953-E6D0ABADE31A}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

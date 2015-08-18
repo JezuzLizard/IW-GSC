@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("Decompiler")]
+[assembly: AssemblyTitle("Resolver")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Decompiler")]
+[assembly: AssemblyProduct("Resolver")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
-[assembly: Guid("b4d45313-9011-44b5-a6ca-02541cac9d72")]
+[assembly: Guid("7d4d4f12-8ff8-484d-a953-e6d0abade31a")]
 
 // Version information for an assembly consists of the following four values:
 //
