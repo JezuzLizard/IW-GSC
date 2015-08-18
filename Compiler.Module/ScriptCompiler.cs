@@ -46,19 +46,14 @@ namespace Compiler.Module
                         break;
 
                     case SimpleCallId:
-                        EmitCall(FindCallNode(node), true);
+                        EmitCall(node.ChildNodes.FirstOrDefault(), true);
                         break;
 
                     case CallId:
-                        EmitCall(FindCallNode(node), false);
+                        EmitCall(node, false);
                         break;
                 }
             }
-        }
-
-        private ParseTreeNode FindCallNode(ParseTreeNode target)
-        {
-            return target.ChildNodes.Find(e => e.Term.Name == CallId).ChildNodes.FirstOrDefault();
         }
 
         private void EmitCall(ParseTreeNode node, bool decTop)

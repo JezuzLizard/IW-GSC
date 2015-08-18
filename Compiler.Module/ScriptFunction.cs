@@ -5,8 +5,8 @@ namespace Compiler.Module
 {
     internal class ScriptFunction
     {
+        private readonly List<byte> _byteCode;
         private readonly List<object> _dataMembers;
-        private readonly List<byte> _byteCode; 
 
         public ScriptFunction()
         {
@@ -17,7 +17,6 @@ namespace Compiler.Module
         public int FunctionLength { get; set; }
         public short FunctionId { get; set; }
         public string FunctionName { get; set; }
-
         public byte[] ByteCode => _byteCode.ToArray();
 
         public byte[] Buffer

@@ -62,7 +62,6 @@ namespace Compiler.Module
             simpleCall.Rule = call + semicolon;
 
 
-
             scriptStatement.Rule = whileStatement;
             whileStatement.Rule = ToTerm("while") + parsParameters + block;
 
@@ -77,7 +76,7 @@ namespace Compiler.Module
 
             Root = rootStatements;
 
-            MarkTransient(call, functionCall, rootStatement, singleParameter, line, parsParameters, block);
+            MarkTransient(rootStatement, singleParameter, line, parsParameters, block);
         }
     }
 }
