@@ -1,4 +1,4 @@
-﻿namespace Dumper
+﻿namespace NativeHelper
 {
     public enum XAssetType
     {

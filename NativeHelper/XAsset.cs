@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dumper
+namespace NativeHelper
 {
     public class XAsset<T> where T : BaseAsset
     {

@@ -47,19 +47,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssetsReader.cs" />
-    <Compile Include="BaseAsset.cs" />
-    <Compile Include="Game.cs" />
-    <Compile Include="Native.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScriptFile.cs" />
-    <Compile Include="XAsset.cs" />
-    <Compile Include="XAssetType.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NativeHelper\NativeHelper.csproj">
+      <Project>{05384691-38d8-40ea-aa56-b56d4e5c4d0d}</Project>
+      <Name>NativeHelper</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

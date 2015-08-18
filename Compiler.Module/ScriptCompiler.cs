@@ -25,18 +25,59 @@ namespace Compiler.Module
             var grammar = new ScriptGrammar();
             var parser = new Parser(grammar);
             _tree = parser.Parse(source);
+            PrepareParseTree(_tree.Root);
             _functions = new List<ScriptFunction>();
             _resolver = resolver;
             var builtIn = Encoding.ASCII.GetString(Resources.builtin);
             _builtIn = JsonConvert.DeserializeObject<string[]>(builtIn);
         }
 
-        public byte[] Compile()
+        private void PrepareParseTree(ParseTreeNode node)
+        {
+            foreach (var childNode in node.ChildNodes)
+            {
+                if (childNode.Term.Name == IdentifierId)
+                {
+                    childNode.Token.Value = childNode.Token.ValueString.ToLower();
+                }
+                else
+                {
+                    PrepareParseTree(childNode);
+                }
+            }
+        }
+
+        private void Compile()
         {
             foreach (var childNode in _tree.Root.ChildNodes)
             {
                 CompileInternal(childNode);
             }
+        }
+
+        public CompiledScriptFile CompileToAsset()
+        {
+            Compile();
+            var buffer = new List<byte>();
+            var byteCode = new List<byte>();
+            foreach (var scriptFunction in _functions)
+            {
+                buffer.AddRange(scriptFunction.Buffer);
+                byteCode.AddRange(scriptFunction.ByteCode);
+            }
+            var compiledFile = new CompiledScriptFile();
+            var compressed = ZlibStream.CompressBuffer(buffer.ToArray());
+            compiledFile.Buffer = compressed;
+            compiledFile.ByteCode = byteCode.ToArray();
+            compiledFile.ByteCodeLength = byteCode.Count;
+            compiledFile.CompressedLength = compressed.Length;
+            compiledFile.UncompressedLength = buffer.Count;
+            return compiledFile;
+        }
+
+        public byte[] CompileToByteArray()
+        {
+            Compile();
             var buffer = new List<byte>();
             var byteCode = new List<byte>();
             foreach (var scriptFunction in _functions)
@@ -45,7 +86,15 @@ namespace Compiler.Module
                 byteCode.AddRange(scriptFunction.ByteCode);
             }
             var result = new List<byte>();
-            result.AddRange(ZlibStream.CompressBuffer(buffer.ToArray()));
+#if !DEBUG
+            var compressed = ZlibStream.CompressBuffer(buffer.ToArray());
+#else
+            var compressed = buffer.ToArray();
+#endif
+            result.AddRange(BitConverter.GetBytes(compressed.Length));
+            result.AddRange(BitConverter.GetBytes(buffer.Count));
+            result.AddRange(BitConverter.GetBytes(byteCode.Count));
+            result.AddRange(compressed);
             result.AddRange(byteCode);
             return result.ToArray();
         }
@@ -127,7 +176,7 @@ namespace Compiler.Module
 
         private string FindFunctionName(ParseTreeNode node)
         {
-            return node.ChildNodes.Find(e => e.Term.Name == IdentifierId)?.Token.ValueString.ToLower();
+            return node.ChildNodes.Find(e => e.Term.Name == IdentifierId)?.Token.ValueString;
         }
 
         private void EmitBuiltInCall(ParseTreeNode node, bool decTop)
@@ -142,7 +191,7 @@ namespace Compiler.Module
                         AddOpcode(Opcode.OpWait);
                         return;
                 }
-                AddOpcode(Opcode.OpPreScriptCall);
+                //AddOpcode(Opcode.OpPreScriptCall);
                 CompileInternal(FindParametersNode(node));
                 AddOpcode(Opcode.OpCallBuiltin);
                 AddByteCode((byte) FindParametersNode(node).ChildNodes.Count);
@@ -188,23 +237,24 @@ namespace Compiler.Module
         private void CreateFunction(ParseTreeNode node)
         {
             var name = node.FindTokenAndGetString();
-            var scriptFunction = new ScriptFunction {FunctionName = name};
+            var scriptFunction = new ScriptFunction {FunctionName = name, FunctionId = _resolver.ResolveValueForString(name)};
             _functions.Add(scriptFunction);
             var parameters = FindParametersNode(node)?.ChildNodes
-                .Select(e => e.Token.ValueString.ToLower())
+                .Select(e => e.Token.ValueString)
                 .ToList();
-
-            AddOpcode(Opcode.OpEnd);
-            if (parameters == null)
+            //AddOpcode(Opcode.OpEnd);
+            if (parameters != null)
             {
-                AddOpcode(Opcode.OpCheckclearparams);
+                for (byte index = 0; index < parameters.Count; index++)
+                {
+                    var parameter = parameters[index];
+                    AddOpcode(Opcode.OpSafeCreateVariableFieldCached);
+                    AddByteCode(index);
+                }
             }
             else
             {
-                foreach (var parameter in parameters)
-                {
-                    //TODO support for parameters
-                }
+                AddOpcode(Opcode.OpCheckclearparams);
             }
             CompileInternal(node.ChildNodes.Find(e => e.Term.Name == LinesId));
             AddOpcode(Opcode.OpEnd);
@@ -232,7 +282,6 @@ namespace Compiler.Module
 
         private bool IsBuiltIn(string function)
         {
-            function = function.ToLower();
             return _builtIn.Contains(function);
         }
     }

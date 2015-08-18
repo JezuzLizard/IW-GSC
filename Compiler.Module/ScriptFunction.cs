@@ -14,7 +14,7 @@ namespace Compiler.Module
             _byteCode = new List<byte>();
         }
         
-        public short FunctionId { get; set; }
+        public ushort FunctionId { get; set; }
         public string FunctionName { get; set; }
         public byte[] ByteCode => _byteCode.ToArray();
 

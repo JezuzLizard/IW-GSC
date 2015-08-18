@@ -18,6 +18,7 @@
         public abstract ushort ResolveValueForMethod(string method);
         public abstract ushort ResolveValueForFunction(string function);
         public abstract ushort ResolveValueForField(string field);
+        public abstract ushort ResolveValueForString(string s);
         public abstract Opcode ResolveOpcodeForValue(byte value);
         public abstract string ResolveMethodNameForValue(ushort value);
         public abstract string ResolveFunctionNameForValue(ushort value);

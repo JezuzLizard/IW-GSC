@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Dumper
+namespace NativeHelper
 {
     //TODO make generic read method
     public class Native
@@ -25,7 +25,7 @@ namespace Dumper
             [Out] int lpNumberOfBytesWritten);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize,
+        private static extern long VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize,
             uint flAllocationType, uint flProtect);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -61,9 +61,9 @@ namespace Dumper
             CreateRemoteThread(_handle, IntPtr.Zero, 0, (IntPtr) pointer, IntPtr.Zero, 0, Bytes);
         }
 
-        public int Malloc(long length)
+        public long Malloc(long length)
         {
-            return (int) VirtualAllocEx(_handle, IntPtr.Zero, (uint) length, 0x3000, 0x40);
+            return VirtualAllocEx(_handle, IntPtr.Zero, (uint) length, 0x3000, 0x40);
         }
 
         public void WriteInt(long pointer, int value)
@@ -102,6 +102,11 @@ namespace Dumper
                 strPointer++;
             }
             return sb.ToString();
+        }
+
+        public void WriteLong(long pointer, long value)
+        {
+            Write(pointer, BitConverter.GetBytes(value));
         }
 
         public void Write(long pointer, byte[] b)

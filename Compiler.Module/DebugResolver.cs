@@ -1,7 +1,7 @@
 ﻿using System;
 using Resolver;
 
-namespace Compiler.Console
+namespace Compiler.Module
 {
     public class DebugResolver : BaseResolver
     {
@@ -31,6 +31,12 @@ namespace Compiler.Console
                     return 0x79;
                 case Opcode.OpCallBuiltin:
                     return 0x20;
+                case Opcode.OpSafeCreateVariableFieldCached:
+                    return 0x2C;
+                case Opcode.OpCallBuiltin1:
+                    return 0x1B;
+                case Opcode.OpCallBuiltin2:
+                    return 0x1C;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null);
             }
@@ -43,6 +49,9 @@ namespace Compiler.Console
                 case "iprintln":
                     return 0x8263;
 
+                case "iprintlnbold":
+                    return 0x8264;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(method), method, null);
             }
@@ -53,7 +62,13 @@ namespace Compiler.Console
             switch (function)
             {
                 case "iprintln":
+                    return 0x185;
+
+                case "iprintlnbold":
                     return 0x186;
+
+                case "setdvar":
+                    return 0x32;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(function), function, null);
@@ -63,6 +78,17 @@ namespace Compiler.Console
         public override ushort ResolveValueForField(string field)
         {
             throw new NotImplementedException();
+        }
+
+        public override ushort ResolveValueForString(string s)
+        {
+            switch (s)
+            {
+                case "main":
+                    return 0x4FDD;
+                default:
+                    return 0;
+            }
         }
 
         public override Opcode ResolveOpcodeForValue(byte value)

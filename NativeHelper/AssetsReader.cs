@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Dumper
+namespace NativeHelper
 {
     public class AssetsReader<T> where T : BaseAsset
     {

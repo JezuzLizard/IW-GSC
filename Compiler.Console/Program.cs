@@ -18,9 +18,10 @@ namespace Compiler.Console
                     return;
                 }
                 var compiler = new ScriptCompiler(dialog.FileName, new DebugResolver(false, Game.Ghosts));
-                var result = compiler.Compile();
-                string fileName = dialog.FileName + ".gsc";
-                File.WriteAllBytes(fileName, result);
+                var result = compiler.CompileToByteArray();
+                var fileNameWithoutExtension = Path.Combine(Path.GetDirectoryName(dialog.FileName), Path.GetFileNameWithoutExtension(dialog.FileName));
+                string compiledFileName = fileNameWithoutExtension + ".xasset";
+                File.WriteAllBytes(compiledFileName, result);
             }
         }
     }

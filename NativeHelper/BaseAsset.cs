@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Dumper
+namespace NativeHelper
 {
     public abstract class BaseAsset
     {
@@ -13,8 +13,15 @@ namespace Dumper
             Pointer = pointer;
         }
 
-        public string Name => Path.GetFileName(Native.ReadString(Pointer));
-        public abstract int Length { get; }
+        public string Name
+        {
+            get
+            {
+                string path = Native.ReadString(Pointer);
+                return Path.GetFileName(path);
+            }
+        }
+        public abstract int Length { get; set; }
 
         public override string ToString()
         {
