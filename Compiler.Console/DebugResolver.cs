@@ -3,15 +3,27 @@ using Resolver;
 
 namespace Compiler.Console
 {
-    public class FakeResolver : BaseResolver
+    public class DebugResolver : BaseResolver
     {
-        public FakeResolver(bool console, Game game) : base(console, game)
+        public DebugResolver(bool console, Game game) : base(console, game)
         {
         }
 
         public override byte ResolveValueForOpcode(Opcode opcode)
         {
-            throw new NotImplementedException();
+            switch (opcode)
+            {
+                case Opcode.OpEnd:
+                    return 0x34;
+                case Opcode.OpCheckclearparams:
+                    return 0x32;
+                case Opcode.OpPreScriptCall:
+                    return 0x88;
+                case Opcode.OpDecTop:
+                    return 0x69;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null);
+            }
         }
 
         public override ushort ResolveValueForMethod(string method)
