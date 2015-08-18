@@ -16,7 +16,7 @@ namespace Compiler.Console
                 {
                     return;
                 }
-                var compiler = new ScriptCompiler(dialog.FileName, new FakeResolver(false, Game.Ghosts));
+                var compiler = new ScriptCompiler(dialog.FileName, new DebugResolver(false, Game.Ghosts));
                 compiler.Compile();
             }
         }
