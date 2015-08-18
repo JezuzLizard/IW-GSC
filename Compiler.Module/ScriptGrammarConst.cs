@@ -1,6 +1,6 @@
 ﻿namespace Compiler.Module
 {
-    internal static class GrammarConst
+    internal static class ScriptGrammarConst
     {
         internal const string NumberId = "number";
         internal const string StringId = "string";
@@ -11,7 +11,7 @@
         internal const string FunctionId = "function";
         internal const string LineId = "line";
         internal const string LinesId = "lines";
-        internal const string CalltId = "call";
+        internal const string CallId = "call";
         internal const string SimpleCallId = "simpleCall";
         internal const string FunctionCallId = "functionCall";
         internal const string FunctionThreadCallId = "threadFunctionCall";
@@ -28,5 +28,7 @@
         internal const string LeftBraceId = "leftBrace";
         internal const string RightBraceId = "rightBrace";
         internal const string SemicolonId = "semicolon";
+        internal const string ScriptStatementId = "scriptStatement";
+        internal const string WhileStatementId = "whileStatement";
     }
 }
