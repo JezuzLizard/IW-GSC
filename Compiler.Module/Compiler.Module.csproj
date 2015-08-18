@@ -38,6 +38,10 @@
       <HintPath>..\packages\Irony.0.9.0\lib\net45\Irony.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,6 +54,11 @@
   <ItemGroup>
     <Compile Include="BaseScriptStatement.cs" />
     <Compile Include="IronyExtensions.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="ScriptFunction.cs" />
     <Compile Include="ScriptGrammarConst.cs" />
     <Compile Include="ScriptCompiler.cs" />
@@ -59,12 +68,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Resources\builtin.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Resolver\Resolver.csproj">
       <Project>{7d4d4f12-8ff8-484d-a953-e6d0abade31a}</Project>
       <Name>Resolver</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Forms;
 using Compiler.Module;
 using Resolver;
@@ -17,7 +18,9 @@ namespace Compiler.Console
                     return;
                 }
                 var compiler = new ScriptCompiler(dialog.FileName, new DebugResolver(false, Game.Ghosts));
-                compiler.Compile();
+                var result = compiler.Compile();
+                string fileName = dialog.FileName + ".gsc";
+                File.WriteAllBytes(fileName, result);
             }
         }
     }

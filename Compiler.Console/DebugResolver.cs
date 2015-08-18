@@ -21,6 +21,16 @@ namespace Compiler.Console
                     return 0x88;
                 case Opcode.OpDecTop:
                     return 0x69;
+                case Opcode.OpGetInteger:
+                    return 0x80;
+                case Opcode.OpGetFloat:
+                    return 0x2B;
+                case Opcode.OpGetString:
+                    return 0x53;
+                case Opcode.OpWait:
+                    return 0x79;
+                case Opcode.OpCallBuiltin:
+                    return 0x20;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null);
             }
@@ -28,12 +38,26 @@ namespace Compiler.Console
 
         public override ushort ResolveValueForMethod(string method)
         {
-            throw new NotImplementedException();
+            switch (method)
+            {
+                case "iprintln":
+                    return 0x8263;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(method), method, null);
+            }
         }
 
         public override ushort ResolveValueForFunction(string function)
         {
-            throw new NotImplementedException();
+            switch (function)
+            {
+                case "iprintln":
+                    return 0x186;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(function), function, null);
+            }
         }
 
         public override ushort ResolveValueForField(string field)

@@ -13,8 +13,7 @@ namespace Compiler.Module
             _dataMembers = new List<object>();
             _byteCode = new List<byte>();
         }
-
-        public int FunctionLength { get; set; }
+        
         public short FunctionId { get; set; }
         public string FunctionName { get; set; }
         public byte[] ByteCode => _byteCode.ToArray();
@@ -24,7 +23,7 @@ namespace Compiler.Module
             get
             {
                 var bytes = new List<byte>();
-                bytes.AddRange(BitConverter.GetBytes(FunctionLength));
+                bytes.AddRange(BitConverter.GetBytes(ByteCode.Length));
                 bytes.AddRange(BitConverter.GetBytes(FunctionId));
                 if (FunctionId == 0)
                 {
