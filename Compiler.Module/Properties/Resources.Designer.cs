@@ -59,15 +59,5 @@ namespace Compiler.Module.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] builtin {
-            get {
-                object obj = ResourceManager.GetObject("builtin", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

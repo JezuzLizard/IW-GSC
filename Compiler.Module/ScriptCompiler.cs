@@ -14,7 +14,6 @@ namespace Compiler.Module
 {
     public class ScriptCompiler
     {
-        private readonly string[] _builtIn;
         private readonly List<ScriptFunction> _functions;
         private readonly BaseResolver _resolver;
         private readonly ParseTree _tree;
@@ -28,8 +27,6 @@ namespace Compiler.Module
             PrepareParseTree(_tree.Root);
             _functions = new List<ScriptFunction>();
             _resolver = resolver;
-            var builtIn = Encoding.ASCII.GetString(Resources.builtin);
-            _builtIn = JsonConvert.DeserializeObject<string[]>(builtIn);
         }
 
         private void PrepareParseTree(ParseTreeNode node)
@@ -179,40 +176,42 @@ namespace Compiler.Module
             return node.ChildNodes.Find(e => e.Term.Name == IdentifierId)?.Token.ValueString;
         }
 
-        private void EmitBuiltInCall(ParseTreeNode node, bool decTop)
+        private void EmitBuiltInFunctionCall(ParseTreeNode node, bool decTop)
         {
             var functionName = FindFunctionName(node);
-            if (node.Term.Name == FunctionCallId)
+            var parametersNode = FindParametersNode(node);
+            CompileInternal(parametersNode);
+            switch (functionName)
             {
-                switch (functionName)
-                {
-                    case "wait":
-                        CompileInternal(FindParametersNode(node));
-                        AddOpcode(Opcode.OpWait);
-                        return;
-                }
-                CompileInternal(FindParametersNode(node));
-                AddOpcode(Opcode.OpCallBuiltin);
-                AddByteCode((byte) FindParametersNode(node).ChildNodes.Count);
-                AddId(_resolver.ResolveValueForFunction(functionName));
-            }
-            else if (node.Term.Name == MethodCallId)
-            {
-            }
-            if (decTop)
-            {
-                AddOpcode(Opcode.OpDecTop);
+                case "wait":
+                    AddOpcode(Opcode.OpWait);
+                    return;
+
+                default:
+                    AddOpcode(Opcode.OpCallBuiltin);
+                    AddByteCode((byte)parametersNode.ChildNodes.Count);
+                    AddId(_resolver.ResolveValueForFunction(functionName));
+                    if (decTop)
+                    {
+                        AddOpcode(Opcode.OpDecTop);
+                    }
+                    break;
             }
         }
 
         private void EmitCall(ParseTreeNode node, bool decTop)
         {
             var functionName = FindFunctionName(node);
-            if (IsBuiltIn(functionName))
+            if (node.Term.Name == FunctionCallId && IsBuiltInFunction(functionName))
             {
-                EmitBuiltInCall(node, decTop);
+                EmitBuiltInFunctionCall(node, decTop);
                 return;
             }
+            if (node.Term.Name == MethodCallId && IsBuiltInMethod(functionName))
+            {
+                return;
+            }
+            
             switch (node.Term.Name)
             {
                 case FunctionCallId:
@@ -231,6 +230,18 @@ namespace Compiler.Module
             {
                 AddOpcode(Opcode.OpDecTop);
             }
+        }
+
+        private bool IsBuiltInMethod(string functionName)
+        {
+            ushort id = _resolver.ResolveValueForMethod(functionName);
+            return id != 0 || functionName == "waittill" || functionName == "notify" || functionName == "endon";
+        }
+
+        private bool IsBuiltInFunction(string functionName)
+        {
+            ushort id = _resolver.ResolveValueForFunction(functionName);
+            return id != 0 || functionName == "wait" || functionName == "waittillframeend";
         }
 
         private void CreateFunction(ParseTreeNode node)
@@ -274,11 +285,6 @@ namespace Compiler.Module
         private void AddDataMember(object member)
         {
             _functions.LastOrDefault()?.AddDataMember(member);
-        }
-
-        private bool IsBuiltIn(string function)
-        {
-            return _builtIn.Contains(function);
         }
     }
 }

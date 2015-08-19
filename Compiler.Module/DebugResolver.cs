@@ -57,7 +57,7 @@ namespace Compiler.Module
                     return 0x8264;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(method), method, null);
+                    return 0;
             }
         }
 
@@ -78,7 +78,7 @@ namespace Compiler.Module
                     return 0xD5;
 
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(function), function, null);
+                    return 0;
             }
         }
 
