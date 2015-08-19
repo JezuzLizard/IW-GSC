@@ -198,7 +198,7 @@ namespace Compiler.Module
                 default:
                     AddOpcode(Opcode.OpCallBuiltin);
                     AddByteCode((byte)parametersNode.ChildNodes.Count);
-                    AddId(_resolver.ResolveValueForFunction(functionName));
+                    AddId(_resolver.ResolveIdOfFunction(functionName));
                     if (decTop)
                     {
                         AddOpcode(Opcode.OpDecTop);
@@ -218,7 +218,7 @@ namespace Compiler.Module
                     EmitOwner(node.ChildNodes[0]);
                     AddOpcode(Opcode.OpCallBuiltinMethod);
                     AddByteCode((byte)parametersNode.ChildNodes.Count);
-                    AddId(_resolver.ResolveValueForMethod(functionName));
+                    AddId(_resolver.ResolveIdOfMethod(functionName));
                     if (decTop)
                     {
                         AddOpcode(Opcode.OpDecTop);
@@ -294,20 +294,20 @@ namespace Compiler.Module
 
         private bool IsBuiltInMethod(string functionName)
         {
-            ushort id = _resolver.ResolveValueForMethod(functionName);
+            ushort id = _resolver.ResolveIdOfMethod(functionName);
             return id != 0 || functionName == "waittill" || functionName == "notify" || functionName == "endon";
         }
 
         private bool IsBuiltInFunction(string functionName)
         {
-            ushort id = _resolver.ResolveValueForFunction(functionName);
+            ushort id = _resolver.ResolveIdOfFunction(functionName);
             return id != 0 || functionName == "wait" || functionName == "waittillframeend";
         }
 
         private void CreateFunction(ParseTreeNode node)
         {
             var name = node.FindTokenAndGetString();
-            var scriptFunction = new ScriptFunction {FunctionName = name, FunctionId = _resolver.ResolveValueForString(name)};
+            var scriptFunction = new ScriptFunction {FunctionName = name, FunctionId = _resolver.ResolveIdOfString(name)};
             _functions.Add(scriptFunction);
             var parameters = FindParametersNode(node)?.ChildNodes
                 .Select(e => e.Token.ValueString)
@@ -329,7 +329,7 @@ namespace Compiler.Module
 
         private void AddOpcode(Opcode opcode)
         {
-            AddByteCode(_resolver.ResolveValueForOpcode(opcode));
+            AddByteCode(_resolver.ResolveIdOfOpcode(opcode));
         }
 
         private void AddId(ushort id)

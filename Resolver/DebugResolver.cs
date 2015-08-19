@@ -8,7 +8,7 @@ namespace Resolver
         {
         }
 
-        public override byte ResolveValueForOpcode(Opcode opcode)
+        public override byte ResolveIdOfOpcode(Opcode opcode)
         {
             switch (opcode)
             {
@@ -55,7 +55,7 @@ namespace Resolver
             }
         }
 
-        public override ushort ResolveValueForMethod(string method)
+        public override ushort ResolveIdOfMethod(string method)
         {
             switch (method)
             {
@@ -70,7 +70,7 @@ namespace Resolver
             }
         }
 
-        public override ushort ResolveValueForFunction(string function)
+        public override ushort ResolveIdOfFunction(string function)
         {
             switch (function)
             {
@@ -91,12 +91,12 @@ namespace Resolver
             }
         }
 
-        public override ushort ResolveValueForField(string field)
+        public override ushort ResolveIdOfField(string field)
         {
             throw new NotImplementedException();
         }
 
-        public override ushort ResolveValueForString(string s)
+        public override ushort ResolveIdOfString(string s)
         {
             switch (s)
             {
@@ -109,22 +109,22 @@ namespace Resolver
             }
         }
 
-        public override Opcode ResolveOpcodeForValue(byte value)
+        public override Opcode ResolveOpcodeById(byte value)
         {
             throw new NotImplementedException();
         }
 
-        public override string ResolveMethodNameForValue(ushort value)
+        public override string ResolveMethodNameById(ushort value)
         {
             throw new NotImplementedException();
         }
 
-        public override string ResolveFunctionNameForValue(ushort value)
+        public override string ResolveFunctionNameById(ushort value)
         {
             throw new NotImplementedException();
         }
 
-        public override string ResolveFieldNameForValue(ushort value)
+        public override string ResolveFieldNameById(ushort value)
         {
             throw new NotImplementedException();
         }

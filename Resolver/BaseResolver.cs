@@ -14,14 +14,14 @@
             Game = game;
         }
 
-        public abstract byte ResolveValueForOpcode(Opcode opcode);
-        public abstract ushort ResolveValueForMethod(string method);
-        public abstract ushort ResolveValueForFunction(string function);
-        public abstract ushort ResolveValueForField(string field);
-        public abstract ushort ResolveValueForString(string s);
-        public abstract Opcode ResolveOpcodeForValue(byte value);
-        public abstract string ResolveMethodNameForValue(ushort value);
-        public abstract string ResolveFunctionNameForValue(ushort value);
-        public abstract string ResolveFieldNameForValue(ushort value);
+        public abstract byte ResolveIdOfOpcode(Opcode opcode);
+        public abstract ushort ResolveIdOfMethod(string method);
+        public abstract ushort ResolveIdOfFunction(string function);
+        public abstract ushort ResolveIdOfField(string field);
+        public abstract ushort ResolveIdOfString(string s);
+        public abstract Opcode ResolveOpcodeById(byte value);
+        public abstract string ResolveMethodNameById(ushort value);
+        public abstract string ResolveFunctionNameById(ushort value);
+        public abstract string ResolveFieldNameById(ushort value);
     }
 }
