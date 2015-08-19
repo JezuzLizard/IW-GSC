@@ -50,7 +50,7 @@ namespace Compiler.Module
             var scriptStatement = new NonTerminal(ScriptStatementId);
             var whileStatement = new NonTerminal(WhileStatementId);
 
-            singleParameter.Rule = identifier | stringLiteral | numberLiteral;
+            singleParameter.Rule = identifier | stringLiteral | numberLiteral | call;
             parameters.Rule = MakeStarRule(parameters, comma, singleParameter) | singleParameter;
             functionCall.Rule = identifier + parameters | identifier + parsParameters;
             threadFunctionCall.Rule = Thread + functionCall;

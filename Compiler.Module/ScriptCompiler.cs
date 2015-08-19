@@ -154,7 +154,7 @@ namespace Compiler.Module
         {
             AddDataMember(s);
             AddOpcode(Opcode.OpGetString);
-            AddByteCode(new byte[2]);
+            AddByteCode(new byte[4]);
         }
 
         private void EmitGetFloat(float value)
@@ -191,7 +191,6 @@ namespace Compiler.Module
                         AddOpcode(Opcode.OpWait);
                         return;
                 }
-                //AddOpcode(Opcode.OpPreScriptCall);
                 CompileInternal(FindParametersNode(node));
                 AddOpcode(Opcode.OpCallBuiltin);
                 AddByteCode((byte) FindParametersNode(node).ChildNodes.Count);
@@ -242,7 +241,7 @@ namespace Compiler.Module
             var parameters = FindParametersNode(node)?.ChildNodes
                 .Select(e => e.Token.ValueString)
                 .ToList();
-            //AddOpcode(Opcode.OpEnd);
+            //TODO add support for parameters and local variables
             if (parameters != null)
             {
                 for (byte index = 0; index < parameters.Count; index++)
@@ -252,10 +251,7 @@ namespace Compiler.Module
                     AddByteCode(index);
                 }
             }
-            else
-            {
-                AddOpcode(Opcode.OpCheckclearparams);
-            }
+            AddOpcode(Opcode.OpCheckclearparams);
             CompileInternal(node.ChildNodes.Find(e => e.Term.Name == LinesId));
             AddOpcode(Opcode.OpEnd);
         }

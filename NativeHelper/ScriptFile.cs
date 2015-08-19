@@ -36,9 +36,10 @@ namespace NativeHelper
             }
             set
             {
-                var pointer = Native.Malloc(value.Length);
+                //var pointer = Native.Malloc(value.Length);
+                var pointer = Native.ReadLong(Pointer + 0x18);
                 Native.Write(pointer, value);
-                Native.WriteLong(Pointer + 0x18, pointer);
+                //Native.WriteLong(Pointer + 0x18, pointer);
             }
         }
 
@@ -51,9 +52,10 @@ namespace NativeHelper
             }
             set
             {
-                var pointer = Native.Malloc(value.Length);
+                //var pointer = Native.Malloc(value.Length);
+                var pointer = Native.ReadLong(Pointer + 0x20);
                 Native.Write(pointer, value);
-                Native.WriteLong(Pointer + 0x20, pointer);
+                //Native.WriteLong(Pointer + 0x20, pointer);
             }
         }
     }

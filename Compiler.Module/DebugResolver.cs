@@ -33,10 +33,14 @@ namespace Compiler.Module
                     return 0x20;
                 case Opcode.OpSafeCreateVariableFieldCached:
                     return 0x2C;
+                case Opcode.OpCallBuiltin0:
+                    return 0x1A;
                 case Opcode.OpCallBuiltin1:
                     return 0x1B;
                 case Opcode.OpCallBuiltin2:
                     return 0x1C;
+                case Opcode.OpCallBuiltin3:
+                    return 0x1D;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null);
             }
@@ -70,6 +74,9 @@ namespace Compiler.Module
                 case "setdvar":
                     return 0x32;
 
+                case "max":
+                    return 0xD5;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(function), function, null);
             }
@@ -86,6 +93,8 @@ namespace Compiler.Module
             {
                 case "main":
                     return 0x4FDD;
+                case "create_vision_set_fog":
+                    return 0x20C0;
                 default:
                     return 0;
             }
