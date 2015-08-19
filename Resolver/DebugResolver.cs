@@ -1,7 +1,6 @@
 ﻿using System;
-using Resolver;
 
-namespace Compiler.Module
+namespace Resolver
 {
     public class DebugResolver : BaseResolver
     {
@@ -41,6 +40,16 @@ namespace Compiler.Module
                     return 0x1C;
                 case Opcode.OpCallBuiltin3:
                     return 0x1D;
+                case Opcode.OpGetSelf:
+                    return 0x41;
+                case Opcode.OpGetAnim:
+                    return 0x89;
+                case Opcode.OpGetLevel:
+                    return 0x67;
+                case Opcode.OpGetGame:
+                    return 0x84;
+                case Opcode.OpCallBuiltinMethod:
+                    return 0x99;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null);
             }

@@ -51,8 +51,8 @@ namespace Compiler.Module
             var whileStatement = new NonTerminal(WhileStatementId);
 
             singleParameter.Rule = identifier | stringLiteral | numberLiteral | call;
-            parameters.Rule = MakeStarRule(parameters, comma, singleParameter) | singleParameter;
-            functionCall.Rule = identifier + parameters | identifier + parsParameters;
+            parameters.Rule = MakePlusRule(parameters, comma, singleParameter) | singleParameter;
+            functionCall.Rule = identifier + parsParameters;
             threadFunctionCall.Rule = Thread + functionCall;
             methodCall.Rule = singleParameter + functionCall;
             methodThreadCall.Rule = singleParameter + threadFunctionCall;

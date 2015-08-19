@@ -53,7 +53,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseScriptStatement.cs" />
-    <Compile Include="DebugResolver.cs" />
     <Compile Include="IronyExtensions.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

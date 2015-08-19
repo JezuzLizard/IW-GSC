@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseResolver.cs" />
+    <Compile Include="DebugResolver.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Opcode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

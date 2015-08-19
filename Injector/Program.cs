@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Compiler.Module;
 using NativeHelper;
+using Resolver;
+using Game = NativeHelper.Game;
 
 namespace Injector
 {

@@ -168,11 +168,19 @@ namespace Compiler.Module
 
         private ParseTreeNode FindParametersNode(ParseTreeNode node)
         {
+            if (node.Term.Name == MethodCallId)
+            {
+                node = node.ChildNodes[1];
+            }
             return node.ChildNodes.Find(e => e.Term.Name == ParametersId);
         }
 
         private string FindFunctionName(ParseTreeNode node)
         {
+            if (node.Term.Name == MethodCallId)
+            {
+                node = node.ChildNodes[1];
+            }
             return node.ChildNodes.Find(e => e.Term.Name == IdentifierId)?.Token.ValueString;
         }
 
@@ -199,6 +207,57 @@ namespace Compiler.Module
             }
         }
 
+        private void EmitBuiltInMethodCall(ParseTreeNode node, bool decTop)
+        {
+            var functionName = FindFunctionName(node);
+            var parametersNode = FindParametersNode(node);
+            CompileInternal(parametersNode);
+            switch (functionName)
+            {
+                default:
+                    EmitOwner(node.ChildNodes[0]);
+                    AddOpcode(Opcode.OpCallBuiltinMethod);
+                    AddByteCode((byte)parametersNode.ChildNodes.Count);
+                    AddId(_resolver.ResolveValueForMethod(functionName));
+                    if (decTop)
+                    {
+                        AddOpcode(Opcode.OpDecTop);
+                    }
+                    break;
+            }
+        }
+
+        private void EmitOwner(ParseTreeNode node)
+        {
+            if (node.Token == null)
+            {
+                CompileInternal(node);
+                return;
+            }
+            switch (node.Token.ValueString)
+            {
+                case "game":
+                    AddOpcode(Opcode.OpGetGame);
+                    break;
+
+                case "self":
+                    AddOpcode(Opcode.OpGetSelf);
+                    break;
+
+                case "level":
+                    AddOpcode(Opcode.OpGetLevel);
+                    break;
+
+                case "anim":
+                    AddOpcode(Opcode.OpGetAnim);
+                    break;
+
+                default:
+                    CompileInternal(node);
+                    break;
+            }
+        }
+
         private void EmitCall(ParseTreeNode node, bool decTop)
         {
             var functionName = FindFunctionName(node);
@@ -209,6 +268,7 @@ namespace Compiler.Module
             }
             if (node.Term.Name == MethodCallId && IsBuiltInMethod(functionName))
             {
+                EmitBuiltInMethodCall(node, decTop);
                 return;
             }
             
