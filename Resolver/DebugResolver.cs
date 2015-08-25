@@ -9,14 +9,14 @@ namespace Resolver
 {
     public class DebugResolver : BaseResolver
     {
-        private readonly Dictionary<byte, Opcode> _opcodes; 
+        private readonly Dictionary<byte, Opcode> _opcodes;
 
         public DebugResolver(bool console, Game game) : base(console, game)
         {
             _opcodes = new Dictionary<byte, Opcode>();
-            string opcodesContent = Encoding.ASCII.GetString(Resources.debug_opcodes);
+            var opcodesContent = Encoding.ASCII.GetString(Resources.debug_opcodes);
             var opcodesIds = JsonConvert.DeserializeObject<byte[]>(opcodesContent);
-            for (int index = 0; index < Enum.GetValues(typeof (Opcode)).Length; index++)
+            for (var index = 0; index < Enum.GetValues(typeof (Opcode)).Length; index++)
             {
                 var value = Enum.GetValues(typeof (Opcode)).GetValue(index);
                 _opcodes[opcodesIds[index]] = (Opcode) value;

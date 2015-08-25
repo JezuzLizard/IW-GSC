@@ -6,14 +6,14 @@ namespace Disassembler
 {
     public class Instruction
     {
-        public int Index { get; set; }
-        public Opcode Opcode { get; set; }
-        public List<object> Data { get; }
-
         public Instruction()
         {
             Data = new List<object>();
         }
+
+        public int Index { get; set; }
+        public Opcode Opcode { get; set; }
+        public List<object> Data { get; }
 
         public void AddData(object data)
         {

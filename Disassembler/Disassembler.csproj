@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryReaderExtensions.cs" />
     <Compile Include="Disassembler.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Instruction.cs" />

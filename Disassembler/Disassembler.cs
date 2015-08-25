@@ -113,16 +113,21 @@ namespace Disassembler
                         break;
 
                     case Opcode.OpEndswitch:
-                        throw new ArgumentOutOfRangeException("OpEndswitch is not supported yet");
+                        throw new InvalidOperationException("OpEndswitch is not supported yet");
 
                     case Opcode.OpGetAnimation:
                         funcStream.ReadBytes(8);
+                        throw new InvalidOperationException("OpGetAnimation is not supported yet");
+
+                    case Opcode.OpGetAnimTree:
+                        _buffer.ReadTerminatedString();
+                        funcStream.ReadByte();
                         break;
 
                     case Opcode.OpGetString:
                     case Opcode.OpGetIString:
                         funcStream.ReadBytes(4);
-                        _buffer.ReadString();
+                        _buffer.ReadTerminatedString();
                         break;
 
                     case Opcode.OpEvalSelfFieldVariable:
