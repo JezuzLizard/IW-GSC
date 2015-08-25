@@ -99,7 +99,7 @@ namespace Resolver
 
         public override string ResolveFieldNameById(ushort value)
         {
-            throw new NotImplementedException();
+            return value.ToString();
         }
 
         public override string ResolveStringById(ushort value)

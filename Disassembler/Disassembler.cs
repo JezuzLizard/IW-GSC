@@ -43,6 +43,10 @@ namespace Disassembler
                 var function = new Function();
                 var functionLength = _buffer.ReadInt32();
                 function.Name = _resolver.ResolveStringById(_buffer.ReadUInt16());
+                if (functionLength > 512000)
+                {
+                    throw new InvalidOperationException("Incorrect buffer reading");
+                }
                 function.Instructions = DisassembleFunction(_bytecode.ReadBytes(functionLength));
                 functions.Add(function);
             }
@@ -78,16 +82,32 @@ namespace Disassembler
                         instructionData.DataString = $"function name : {_resolver.ResolveFunctionNameById(funcId)}";
                     }
                         break;
+                    case Opcode.OpJump:
+                        {
+                            var offset = funcStream.ReadInt32();
+                            instructionData.AddData(offset);
+                            instructionData.DataString =
+                                $"offset = 0x{offset:X}, jump to index 0x{instruction.Index + 2 + offset:X}";
+                        }
+                        break;
                     case Opcode.OpJumpOnTrueExpr:
                     case Opcode.OpJumpOnTrue:
                     case Opcode.OpJumpOnFalseExpr:
-                    case Opcode.OpJumpback:
                     case Opcode.OpJumpOnFalse:
                     {
                         var offset = funcStream.ReadInt16();
                         instructionData.AddData(offset);
                         instructionData.DataString =
                             $"offset = 0x{offset:X}, jump to index 0x{instruction.Index + 2 + offset:X}";
+                    }
+                        break;
+
+                    case Opcode.OpJumpback:
+                    {
+                        var offset = funcStream.ReadUInt16();
+                        instructionData.AddData(offset);
+                        instructionData.DataString =
+                            $"offset = 0x{offset:X}, jump back to index 0x{instruction.Index + 1 - offset:X}";
                     }
                         break;
                     case Opcode.OpCallBuiltinMethod0:
@@ -123,13 +143,22 @@ namespace Disassembler
                         break;
 
                     case Opcode.OpGetFloat:
+                        funcStream.ReadSingle();
+                        break;
                     case Opcode.OpScriptLocalThreadCall:
                     case Opcode.OpSwitch:
                     case Opcode.OpScriptLocalMethodThreadCall:
                     case Opcode.OpScriptLocalMethodChildThreadCall:
-                    case Opcode.OpJump:
                     case Opcode.OpScriptLocalChildThreadCall:
                     case Opcode.OpGetInteger:
+                        funcStream.ReadInt32();
+                        break;
+
+                    case Opcode.OpScriptFarMethodThreadCall:
+                    case Opcode.OpScriptFarChildThreadCall:
+                    case Opcode.OpScriptFarMethodChildThreadCall:
+                    case Opcode.OpScriptFarThreadCall:
+                        DisassembleFarCall(instructionData);
                         funcStream.ReadInt32();
                         break;
 
@@ -143,6 +172,14 @@ namespace Disassembler
                     case Opcode.OpScriptLocalFunctionCall2:
                     case Opcode.OpGetLocalFunction:
                     case Opcode.OpCallBuiltinMethod:
+                        funcStream.ReadBytes(3);
+                        break;
+
+                    case Opcode.OpScriptFarFunctionCall2:
+                    case Opcode.OpScriptFarFunctionCall:
+                    case Opcode.OpGetFarFunction:
+                    case Opcode.OpScriptFarMethodCall:
+                        DisassembleFarCall(instructionData);
                         funcStream.ReadBytes(3);
                         break;
 
@@ -178,7 +215,12 @@ namespace Disassembler
                     case Opcode.OpEvalLevelFieldVariableRef:
                     case Opcode.OpEvalAnimFieldVariable:
                     case Opcode.OpEvalSelfFieldVariableRef:
-                        funcStream.ReadInt16();
+                        var fieldId = funcStream.ReadUInt16();
+                        var fieldName = fieldId <= 0x95A1
+                            ? _resolver.ResolveFieldNameById(fieldId)
+                            : _buffer.ReadTerminatedString();
+                        instructionData.AddData(fieldName);
+                        instructionData.DataString = $"field name : {fieldName}";
                         break;
 
                     case Opcode.OpSetNewLocalVariableFieldCached0:
@@ -198,17 +240,41 @@ namespace Disassembler
                     case Opcode.OpScriptThreadCallPointer:
                     case Opcode.OpCreateLocalVariable:
                     case Opcode.OpEvalLocalVariableObjectCached:
-                    case Opcode.OpGetNegByte:
                     case Opcode.OpCallBuiltinMethodPointer:
                     case Opcode.OpEvalLocalArrayCached:
-                    case Opcode.OpGetByte:
                     case Opcode.OpScriptChildThreadCallPointer:
                         funcStream.ReadByte();
+                        break;
+
+                    case Opcode.OpGetByte:
+                    {
+                        var b = funcStream.ReadByte();
+                        instructionData.AddData(b);
+                        instructionData.DataString = $"value = {b}";
+                    }
+                        break;
+                    case Opcode.OpGetNegByte:
+                    {
+                        var b = funcStream.ReadByte();
+                        instructionData.AddData(b);
+                        instructionData.DataString = $"value = {-b}";
+                    }
                         break;
                 }
                 instructions.Add(instruction);
             }
             return instructions;
+        }
+
+        private void DisassembleFarCall(InstructionData instructionData)
+        {
+            var fileNameId = _buffer.ReadUInt16();
+            var fileName = fileNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(fileNameId);
+            var funcNameId = _buffer.ReadUInt16();
+            var funcName = funcNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(funcNameId);
+            instructionData.AddData(fileName);
+            instructionData.AddData(funcName);
+            instructionData.DataString = $"{fileName}::{funcName}";
         }
     }
 }
