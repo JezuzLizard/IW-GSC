@@ -67,6 +67,7 @@ namespace Disassembler
                 var opcode = _resolver.ResolveOpcodeById(funcStream.ReadByte());
                 instruction.Opcode = opcode;
                 //just skip data for now
+                int currentIndex = instruction.Index + 1;
                 switch (opcode)
                 {
                     case Opcode.OpCallBuiltin0:
@@ -87,7 +88,7 @@ namespace Disassembler
                             var offset = funcStream.ReadInt32();
                             instructionData.AddData(offset);
                             instructionData.DataString =
-                                $"offset = 0x{offset:X}, jump to index 0x{instruction.Index + 2 + offset:X}";
+                                $"offset = 0x{offset:X}, jump to index 0x{currentIndex + 4 + offset:X}";
                         }
                         break;
                     case Opcode.OpJumpOnTrueExpr:
@@ -98,7 +99,7 @@ namespace Disassembler
                         var offset = funcStream.ReadInt16();
                         instructionData.AddData(offset);
                         instructionData.DataString =
-                            $"offset = 0x{offset:X}, jump to index 0x{instruction.Index + 2 + offset:X}";
+                            $"offset = 0x{offset:X}, jump to index 0x{currentIndex + 2 + offset:X}";
                     }
                         break;
 
@@ -107,7 +108,7 @@ namespace Disassembler
                         var offset = funcStream.ReadUInt16();
                         instructionData.AddData(offset);
                         instructionData.DataString =
-                            $"offset = 0x{offset:X}, jump back to index 0x{instruction.Index + 1 - offset:X}";
+                            $"offset = 0x{offset:X}, jump back to index 0x{currentIndex + 2 - offset:X}";
                     }
                         break;
                     case Opcode.OpCallBuiltinMethod0:
@@ -173,7 +174,7 @@ namespace Disassembler
                     case Opcode.OpScriptLocalFunctionCall:
                     case Opcode.OpScriptLocalFunctionCall2:
                     case Opcode.OpGetLocalFunction:
-                        DissassembleLocalCall(instructionData, funcStream, instruction.Index);
+                        DissassembleLocalCall(instructionData, funcStream, currentIndex);
                         break;
                     case Opcode.OpCallBuiltinMethod:
                     case Opcode.OpCallBuiltin:
@@ -278,7 +279,7 @@ namespace Disassembler
             int offset = BitConverter.ToInt32(initial, 0);
             offset = offset << 8 >> 10;
             instructionData.AddData(offset);
-            instructionData.DataString = $"pointer to call = 0x{offset + currentIndex + 1:X}, offset = {offset}";
+            instructionData.DataString = $"pointer to call = 0x{offset + currentIndex:X}, offset = {offset}";
         }
 
         private void DisassembleFarCall(InstructionData instructionData)
