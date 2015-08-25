@@ -42,10 +42,12 @@ namespace Disassembler
             {
                 var function = new Function();
                 var functionLength = _buffer.ReadInt32();
-                function.Name = _resolver.ResolveStringById(_buffer.ReadUInt16());
+                ushort functionNameId = _buffer.ReadUInt16();
+                function.Name = functionNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(functionNameId);
+                
                 if (functionLength > 512000)
                 {
-                    throw new InvalidOperationException("Incorrect buffer reading");
+                    throw new InvalidOperationException("Unexpected error while reading buffer");
                 }
                 function.Instructions = DisassembleFunction(_bytecode.ReadBytes(functionLength));
                 functions.Add(function);
@@ -67,7 +69,7 @@ namespace Disassembler
                 var opcode = _resolver.ResolveOpcodeById(funcStream.ReadByte());
                 instruction.Opcode = opcode;
                 //just skip data for now
-                int currentIndex = instruction.Index + 1;
+                var currentIndex = instruction.Index + 1;
                 switch (opcode)
                 {
                     case Opcode.OpCallBuiltin0:
@@ -84,12 +86,12 @@ namespace Disassembler
                     }
                         break;
                     case Opcode.OpJump:
-                        {
-                            var offset = funcStream.ReadInt32();
-                            instructionData.AddData(offset);
-                            instructionData.DataString =
-                                $"offset = 0x{offset:X}, jump to index 0x{currentIndex + 4 + offset:X}";
-                        }
+                    {
+                        var offset = funcStream.ReadInt32();
+                        instructionData.AddData(offset);
+                        instructionData.DataString =
+                            $"offset = 0x{offset:X}, jump to index 0x{currentIndex + 4 + offset:X}";
+                    }
                         break;
                     case Opcode.OpJumpOnTrueExpr:
                     case Opcode.OpJumpOnTrue:
@@ -144,37 +146,44 @@ namespace Disassembler
                         break;
 
                     case Opcode.OpGetFloat:
-                        float f = funcStream.ReadSingle();
+                        var f = funcStream.ReadSingle();
                         instructionData.AddData(f);
                         instructionData.DataString = $"value = {f}";
                         break;
-                    case Opcode.OpScriptLocalThreadCall:
+
                     case Opcode.OpSwitch:
+                        throw new InvalidOperationException("OpSwitch is not supported yet");
+
+                    case Opcode.OpGetInteger:
+                        var i = funcStream.ReadInt32();
+                        instructionData.AddData(i);
+                        instructionData.DataString = $"value = {i}";
+                        break;
+
+                    case Opcode.OpScriptLocalThreadCall:
                     case Opcode.OpScriptLocalMethodThreadCall:
                     case Opcode.OpScriptLocalMethodChildThreadCall:
                     case Opcode.OpScriptLocalChildThreadCall:
-                    case Opcode.OpGetInteger:
-                        funcStream.ReadInt32();
+                        DissassembleLocalCall(instructionData, funcStream, currentIndex, true);
                         break;
 
                     case Opcode.OpScriptFarMethodThreadCall:
                     case Opcode.OpScriptFarChildThreadCall:
                     case Opcode.OpScriptFarMethodChildThreadCall:
                     case Opcode.OpScriptFarThreadCall:
-                        DisassembleFarCall(instructionData);
-                        funcStream.ReadInt32();
+                        DisassembleFarCall(instructionData, funcStream, true);
                         break;
 
                     case Opcode.OpGetVector:
                         funcStream.ReadBytes(12);
                         break;
 
-                    
+
                     case Opcode.OpScriptLocalMethodCall:
                     case Opcode.OpScriptLocalFunctionCall:
                     case Opcode.OpScriptLocalFunctionCall2:
                     case Opcode.OpGetLocalFunction:
-                        DissassembleLocalCall(instructionData, funcStream, currentIndex);
+                        DissassembleLocalCall(instructionData, funcStream, currentIndex, false);
                         break;
                     case Opcode.OpCallBuiltinMethod:
                     case Opcode.OpCallBuiltin:
@@ -185,8 +194,7 @@ namespace Disassembler
                     case Opcode.OpScriptFarFunctionCall:
                     case Opcode.OpGetFarFunction:
                     case Opcode.OpScriptFarMethodCall:
-                        DisassembleFarCall(instructionData);
-                        funcStream.ReadBytes(3);
+                        DisassembleFarCall(instructionData, funcStream, false);
                         break;
 
                     case Opcode.OpEndswitch:
@@ -222,9 +230,16 @@ namespace Disassembler
                     case Opcode.OpEvalAnimFieldVariable:
                     case Opcode.OpEvalSelfFieldVariableRef:
                         var fieldId = funcStream.ReadUInt16();
-                        var fieldName = fieldId <= 0x95A1
-                            ? _resolver.ResolveFieldNameById(fieldId)
-                            : _buffer.ReadTerminatedString();
+                        string fieldName;
+                        if (fieldId <= 0x95A1)
+                        {
+                            fieldName = _resolver.ResolveFieldNameById(fieldId);
+                        }
+                        else
+                        {
+                            fieldId = _buffer.ReadUInt16();
+                            fieldName = fieldId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveFieldNameById(fieldId);
+                        }
                         instructionData.AddData(fieldName);
                         instructionData.DataString = $"field name : {fieldName}";
                         break;
@@ -272,17 +287,28 @@ namespace Disassembler
             return instructions;
         }
 
-        private void DissassembleLocalCall(InstructionData instructionData, BinaryReader funcStream, int currentIndex)
+        private void DissassembleLocalCall(InstructionData instructionData, BinaryReader funcStream, int currentIndex,
+            bool thread)
         {
-            byte[] initial = new byte[4];
+            var initial = new byte[4];
             Array.Copy(funcStream.ReadBytes(3), initial, 3);
-            int offset = BitConverter.ToInt32(initial, 0);
+            var offset = BitConverter.ToInt32(initial, 0);
             offset = offset << 8 >> 10;
             instructionData.AddData(offset);
-            instructionData.DataString = $"pointer to call = 0x{offset + currentIndex:X}, offset = {offset}";
+            if (thread)
+            {
+                var numOfParams = funcStream.ReadByte();
+                instructionData.AddData(numOfParams);
+                instructionData.DataString =
+                    $"pointer to call = 0x{offset + currentIndex:X}, parameters count = {numOfParams}, offset = {offset}";
+            }
+            else
+            {
+                instructionData.DataString = $"pointer to call = 0x{offset + currentIndex:X}, offset = {offset}";
+            }
         }
 
-        private void DisassembleFarCall(InstructionData instructionData)
+        private void DisassembleFarCall(InstructionData instructionData, BinaryReader funcStream, bool thread)
         {
             var fileNameId = _buffer.ReadUInt16();
             var fileName = fileNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(fileNameId);
@@ -290,7 +316,16 @@ namespace Disassembler
             var funcName = funcNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(funcNameId);
             instructionData.AddData(fileName);
             instructionData.AddData(funcName);
-            instructionData.DataString = $"{fileName}::{funcName}";
+            funcStream.ReadBytes(3);
+            if (thread)
+            {
+                var numOfParams = funcStream.ReadByte();
+                instructionData.DataString = $"{fileName}::{funcName} parameters count = {numOfParams}";
+            }
+            else
+            {
+                instructionData.DataString = $"{fileName}::{funcName}";
+            }
         }
     }
 }
