@@ -43,9 +43,11 @@ namespace Disassembler
             {
                 var function = new Function();
                 var functionLength = _buffer.ReadInt32();
-                ushort functionNameId = _buffer.ReadUInt16();
-                function.Name = functionNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(functionNameId);
-                
+                var functionNameId = _buffer.ReadUInt16();
+                function.Name = functionNameId == 0
+                    ? _buffer.ReadTerminatedString()
+                    : _resolver.ResolveStringById(functionNameId);
+
                 if (functionLength > 512000)
                 {
                     throw new InvalidOperationException("Unexpected error while reading buffer");
@@ -175,6 +177,7 @@ namespace Disassembler
                         DisassembleFarCall(instructionData, funcStream, true);
                         break;
 
+                    //TODO
                     case Opcode.OpGetVector:
                         funcStream.ReadBytes(12);
                         break;
@@ -202,10 +205,12 @@ namespace Disassembler
                         DisassembleEndSwitch(instructionData, funcStream, currentIndex);
                         break;
 
+                    //TODO
                     case Opcode.OpGetAnimation:
                         funcStream.ReadBytes(8);
                         throw new InvalidOperationException("OpGetAnimation is not supported yet");
 
+                    //TODO
                     case Opcode.OpGetAnimTree:
                         _buffer.ReadTerminatedString();
                         funcStream.ReadByte();
@@ -240,12 +245,15 @@ namespace Disassembler
                         else
                         {
                             fieldId = _buffer.ReadUInt16();
-                            fieldName = fieldId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveFieldNameById(fieldId);
+                            fieldName = fieldId == 0
+                                ? _buffer.ReadTerminatedString()
+                                : _resolver.ResolveFieldNameById(fieldId);
                         }
                         instructionData.AddData(fieldName);
                         instructionData.DataString = $"field name : {fieldName}";
                         break;
 
+                    //TODO
                     case Opcode.OpSetNewLocalVariableFieldCached0:
                     case Opcode.OpEvalNewLocalArrayRefCached0:
                     case Opcode.OpCallBuiltinPointer:
@@ -291,14 +299,14 @@ namespace Disassembler
 
         private void DisassembleEndSwitch(InstructionData instructionData, BinaryReader funcStream, int currentIndex)
         {
-            ushort numOfCases = funcStream.ReadUInt16();
+            var numOfCases = funcStream.ReadUInt16();
             var builder = new StringBuilder();
-            for (int i = 0; i < numOfCases; i++)
+            for (var i = 0; i < numOfCases; i++)
             {
-                uint ptr = funcStream.ReadUInt32();
+                var ptr = funcStream.ReadUInt32();
                 if (ptr < 0x40000 && ptr > 0)
                 {
-                    string switchStatement = _buffer.ReadTerminatedString();
+                    var switchStatement = _buffer.ReadTerminatedString();
                     builder.Append($"case: {switchStatement}");
                 }
                 else if (ptr < 0x40000)
@@ -308,7 +316,7 @@ namespace Disassembler
                 }
                 else
                 {
-                    byte[] container = new byte[2];
+                    var container = new byte[2];
                     Array.Copy(BitConverter.GetBytes(ptr), container, 2);
                     builder.Append($"case: {BitConverter.ToUInt16(container, 0)}");
                 }
