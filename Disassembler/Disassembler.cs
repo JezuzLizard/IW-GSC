@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Resolver;
 
 namespace Disassembler
@@ -24,11 +25,11 @@ namespace Disassembler
             var bufferPath = path + ".buffer";
             if (!File.Exists(bytecodePath))
             {
-                throw new ArgumentOutOfRangeException("File with script bytecode is not exists!");
+                throw new InvalidOperationException("File with script bytecode is not exists!");
             }
             if (!File.Exists(bufferPath))
             {
-                throw new ArgumentOutOfRangeException("File with script buffer is not exists!");
+                throw new InvalidOperationException("File with script buffer is not exists!");
             }
             _bytecode = new BinaryReader(File.OpenRead(bytecodePath));
             _buffer = new BinaryReader(File.OpenRead(bufferPath));
@@ -68,7 +69,6 @@ namespace Disassembler
                     (int) (_bytecode.BaseStream.Position - functionByteCode.Length + funcStream.BaseStream.Position);
                 var opcode = _resolver.ResolveOpcodeById(funcStream.ReadByte());
                 instruction.Opcode = opcode;
-                //just skip data for now
                 var currentIndex = instruction.Index + 1;
                 switch (opcode)
                 {
@@ -152,7 +152,8 @@ namespace Disassembler
                         break;
 
                     case Opcode.OpSwitch:
-                        throw new InvalidOperationException("OpSwitch is not supported yet");
+                        funcStream.ReadInt32();
+                        break;
 
                     case Opcode.OpGetInteger:
                         var i = funcStream.ReadInt32();
@@ -164,7 +165,7 @@ namespace Disassembler
                     case Opcode.OpScriptLocalMethodThreadCall:
                     case Opcode.OpScriptLocalMethodChildThreadCall:
                     case Opcode.OpScriptLocalChildThreadCall:
-                        DissassembleLocalCall(instructionData, funcStream, currentIndex, true);
+                        DisassembleLocalCall(instructionData, funcStream, currentIndex, true);
                         break;
 
                     case Opcode.OpScriptFarMethodThreadCall:
@@ -183,7 +184,7 @@ namespace Disassembler
                     case Opcode.OpScriptLocalFunctionCall:
                     case Opcode.OpScriptLocalFunctionCall2:
                     case Opcode.OpGetLocalFunction:
-                        DissassembleLocalCall(instructionData, funcStream, currentIndex, false);
+                        DisassembleLocalCall(instructionData, funcStream, currentIndex, false);
                         break;
                     case Opcode.OpCallBuiltinMethod:
                     case Opcode.OpCallBuiltin:
@@ -198,7 +199,8 @@ namespace Disassembler
                         break;
 
                     case Opcode.OpEndswitch:
-                        throw new InvalidOperationException("OpEndswitch is not supported yet");
+                        DisassembleEndSwitch(instructionData, funcStream, currentIndex);
+                        break;
 
                     case Opcode.OpGetAnimation:
                         funcStream.ReadBytes(8);
@@ -287,7 +289,40 @@ namespace Disassembler
             return instructions;
         }
 
-        private void DissassembleLocalCall(InstructionData instructionData, BinaryReader funcStream, int currentIndex,
+        private void DisassembleEndSwitch(InstructionData instructionData, BinaryReader funcStream, int currentIndex)
+        {
+            ushort numOfCases = funcStream.ReadUInt16();
+            var builder = new StringBuilder();
+            for (int i = 0; i < numOfCases; i++)
+            {
+                uint ptr = funcStream.ReadUInt32();
+                if (ptr < 0x40000 && ptr > 0)
+                {
+                    string switchStatement = _buffer.ReadTerminatedString();
+                    builder.Append($"case: {switchStatement}");
+                }
+                else if (ptr < 0x40000)
+                {
+                    _buffer.ReadUInt16();
+                    builder.Append("case: default");
+                }
+                else
+                {
+                    byte[] container = new byte[2];
+                    Array.Copy(BitConverter.GetBytes(ptr), container, 2);
+                    builder.Append($"case: {BitConverter.ToUInt16(container, 0)}");
+                }
+                if (i != numOfCases - 1)
+                {
+                    builder.Append(", ");
+                }
+                //TODO
+                funcStream.ReadBytes(3);
+            }
+            instructionData.DataString = builder.ToString();
+        }
+
+        private void DisassembleLocalCall(InstructionData instructionData, BinaryReader funcStream, int currentIndex,
             bool thread)
         {
             var initial = new byte[4];
