@@ -37,11 +37,11 @@ namespace Dumper
             var native = new Native();
             while (!native.ConnectToGame(gameId)) ;
             Console.Clear();
-            DumpGSC(native);
+            DumpGsc(native);
             Console.ReadKey();
         }
 
-        private static void DumpGSC(Native native)
+        private static void DumpGsc(Native native)
         {
             var assets = new AssetsReader<ScriptFile>(XAssetType.ScriptFile, native).ReadAssets();
             var assetsPath = Path.Combine(StartupPath, "Assets");
@@ -51,11 +51,9 @@ namespace Dumper
             }
             foreach (var scriptFile in assets)
             {
-                using (var file = File.Create(Path.Combine(assetsPath, scriptFile.Name)))
-                {
-                    file.Write(scriptFile.Buffer, 0, scriptFile.Buffer.Length);
-                    file.Write(scriptFile.ByteCode, 0, scriptFile.ByteCode.Length);
-                }
+                var scriptName = Path.Combine(assetsPath, scriptFile.Name);
+                File.WriteAllBytes(scriptName + ".buffer", scriptFile.Buffer);
+                File.WriteAllBytes(scriptName + ".bytecode", scriptFile.ByteCode);
             }
             Console.WriteLine("GSC files successfully dumped!");
         }
