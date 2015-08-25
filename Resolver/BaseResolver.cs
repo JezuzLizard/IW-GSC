@@ -23,5 +23,6 @@
         public abstract string ResolveMethodNameById(ushort value);
         public abstract string ResolveFunctionNameById(ushort value);
         public abstract string ResolveFieldNameById(ushort value);
+        public abstract string ResolveStringById(ushort value);
     }
 }

@@ -1,58 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Newtonsoft.Json;
+using Resolver.Properties;
 
 namespace Resolver
 {
     public class DebugResolver : BaseResolver
     {
+        private readonly Dictionary<byte, Opcode> _opcodes; 
+
         public DebugResolver(bool console, Game game) : base(console, game)
         {
+            _opcodes = new Dictionary<byte, Opcode>();
+            string opcodesContent = Encoding.ASCII.GetString(Resources.debug_opcodes);
+            var opcodesIds = JsonConvert.DeserializeObject<byte[]>(opcodesContent);
+            for (int index = 0; index < Enum.GetValues(typeof (Opcode)).Length; index++)
+            {
+                var value = Enum.GetValues(typeof (Opcode)).GetValue(index);
+                _opcodes[opcodesIds[index]] = (Opcode) value;
+            }
         }
 
         public override byte ResolveIdOfOpcode(Opcode opcode)
         {
-            switch (opcode)
-            {
-                case Opcode.OpEnd:
-                    return 0x34;
-                case Opcode.OpCheckclearparams:
-                    return 0x32;
-                case Opcode.OpPreScriptCall:
-                    return 0x88;
-                case Opcode.OpDecTop:
-                    return 0x69;
-                case Opcode.OpGetInteger:
-                    return 0x80;
-                case Opcode.OpGetFloat:
-                    return 0x2B;
-                case Opcode.OpGetString:
-                    return 0x53;
-                case Opcode.OpWait:
-                    return 0x79;
-                case Opcode.OpCallBuiltin:
-                    return 0x20;
-                case Opcode.OpSafeCreateVariableFieldCached:
-                    return 0x2C;
-                case Opcode.OpCallBuiltin0:
-                    return 0x1A;
-                case Opcode.OpCallBuiltin1:
-                    return 0x1B;
-                case Opcode.OpCallBuiltin2:
-                    return 0x1C;
-                case Opcode.OpCallBuiltin3:
-                    return 0x1D;
-                case Opcode.OpGetSelf:
-                    return 0x41;
-                case Opcode.OpGetAnim:
-                    return 0x89;
-                case Opcode.OpGetLevel:
-                    return 0x67;
-                case Opcode.OpGetGame:
-                    return 0x84;
-                case Opcode.OpCallBuiltinMethod:
-                    return 0x99;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(opcode), opcode, null);
-            }
+            return _opcodes.FirstOrDefault(e => e.Value == opcode).Key;
         }
 
         public override ushort ResolveIdOfMethod(string method)
@@ -111,7 +84,7 @@ namespace Resolver
 
         public override Opcode ResolveOpcodeById(byte value)
         {
-            throw new NotImplementedException();
+            return _opcodes[value];
         }
 
         public override string ResolveMethodNameById(ushort value)
@@ -127,6 +100,11 @@ namespace Resolver
         public override string ResolveFieldNameById(ushort value)
         {
             throw new NotImplementedException();
+        }
+
+        public override string ResolveStringById(ushort value)
+        {
+            return value.ToString();
         }
     }
 }

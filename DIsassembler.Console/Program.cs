@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +21,14 @@ namespace DIsassembler.Console
                     return;
                 }
                 var disassembler = new Disassembler.Disassembler(new DebugResolver(false, Game.Ghosts), dialog.FileName);
+                var path = Path.Combine(Path.GetDirectoryName(dialog.FileName), Path.GetFileNameWithoutExtension(dialog.FileName));
+                using (var writer = new StreamWriter(path + ".txt"))
+                {
+                    foreach (var function in disassembler.Disassemble())
+                    {
+                        writer.Write(function.ToString());
+                    }
+                }
             }
         }
     }
