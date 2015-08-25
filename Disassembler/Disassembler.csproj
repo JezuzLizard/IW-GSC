@@ -44,6 +44,7 @@
     <Compile Include="Disassembler.cs" />
     <Compile Include="Function.cs" />
     <Compile Include="Instruction.cs" />
+    <Compile Include="InstructionData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

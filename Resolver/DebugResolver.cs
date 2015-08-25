@@ -89,12 +89,12 @@ namespace Resolver
 
         public override string ResolveMethodNameById(ushort value)
         {
-            throw new NotImplementedException();
+            return value.ToString();
         }
 
         public override string ResolveFunctionNameById(ushort value)
         {
-            throw new NotImplementedException();
+            return value.ToString();
         }
 
         public override string ResolveFieldNameById(ushort value)

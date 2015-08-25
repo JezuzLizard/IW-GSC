@@ -56,6 +56,8 @@ namespace Disassembler
             while (funcStream.PeekChar() != -1)
             {
                 var instruction = new Instruction();
+                var instructionData = new InstructionData();
+                instruction.Data = instructionData;
                 instruction.Index =
                     (int) (_bytecode.BaseStream.Position - functionByteCode.Length + funcStream.BaseStream.Position);
                 var opcode = _resolver.ResolveOpcodeById(funcStream.ReadByte());
@@ -69,23 +71,55 @@ namespace Disassembler
                     case Opcode.OpCallBuiltin3:
                     case Opcode.OpCallBuiltin4:
                     case Opcode.OpCallBuiltin5:
+                    case Opcode.OpGetBuiltinFunction:
+                    {
+                        var funcId = funcStream.ReadUInt16();
+                        instructionData.AddData(funcId);
+                        instructionData.DataString = $"function name : {_resolver.ResolveFunctionNameById(funcId)}";
+                    }
+                        break;
                     case Opcode.OpJumpOnTrueExpr:
-                    case Opcode.OpGetUnsignedShort:
                     case Opcode.OpJumpOnTrue:
                     case Opcode.OpJumpOnFalseExpr:
-                    case Opcode.OpGetBuiltinFunction:
                     case Opcode.OpJumpback:
-                    case Opcode.OpGetBuiltinMethod:
-                    case Opcode.OpWaittillmatch:
-                    case Opcode.OpGetNegUnsignedShort:
+                    case Opcode.OpJumpOnFalse:
+                    {
+                        var offset = funcStream.ReadInt16();
+                        instructionData.AddData(offset);
+                        instructionData.DataString =
+                            $"offset = 0x{offset:X}, jump to index 0x{instruction.Index + 2 + offset:X}";
+                    }
+                        break;
                     case Opcode.OpCallBuiltinMethod0:
                     case Opcode.OpCallBuiltinMethod1:
                     case Opcode.OpCallBuiltinMethod2:
                     case Opcode.OpCallBuiltinMethod3:
                     case Opcode.OpCallBuiltinMethod4:
                     case Opcode.OpCallBuiltinMethod5:
-                    case Opcode.OpJumpOnFalse:
-                        funcStream.ReadInt16();
+                    case Opcode.OpGetBuiltinMethod:
+                    {
+                        var funcId = funcStream.ReadUInt16();
+                        instructionData.AddData(funcId);
+                        instructionData.DataString = $"method name : {_resolver.ResolveMethodNameById(funcId)}";
+                    }
+                        break;
+                    case Opcode.OpWaittillmatch:
+                        funcStream.ReadUInt16();
+                        break;
+
+                    case Opcode.OpGetUnsignedShort:
+                    {
+                        var value = funcStream.ReadUInt16();
+                        instructionData.AddData(value);
+                        instructionData.DataString = $"value : {value}";
+                    }
+                        break;
+                    case Opcode.OpGetNegUnsignedShort:
+                    {
+                        var value = funcStream.ReadUInt16();
+                        instructionData.AddData(value);
+                        instructionData.DataString = $"value : {-value}";
+                    }
                         break;
 
                     case Opcode.OpGetFloat:
@@ -127,7 +161,9 @@ namespace Disassembler
                     case Opcode.OpGetString:
                     case Opcode.OpGetIString:
                         funcStream.ReadBytes(4);
-                        _buffer.ReadTerminatedString();
+                        var s = _buffer.ReadTerminatedString();
+                        instructionData.AddData(s);
+                        instructionData.DataString = $"value = {s}";
                         break;
 
                     case Opcode.OpEvalSelfFieldVariable:

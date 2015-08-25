@@ -14,6 +14,7 @@ namespace Disassembler
             do
             {
                 b = reader.ReadByte();
+                bytes.Add(b);
             } while (b != 0);
             return Encoding.ASCII.GetString(bytes.Where(e => e != 0).ToArray());
         }
