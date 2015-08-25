@@ -253,28 +253,39 @@ namespace Disassembler
                         instructionData.DataString = $"field name : {fieldName}";
                         break;
 
-                    //TODO
+
                     case Opcode.OpSetNewLocalVariableFieldCached0:
                     case Opcode.OpEvalNewLocalArrayRefCached0:
-                    case Opcode.OpCallBuiltinPointer:
                     case Opcode.OpSafeCreateVariableFieldCached:
                     case Opcode.OpClearLocalVariableFieldCached:
-                    case Opcode.OpScriptMethodThreadCallPointer:
                     case Opcode.OpSetLocalVariableFieldCached:
                     case Opcode.OpRemoveLocalVariables:
                     case Opcode.OpEvalLocalVariableRefCached:
                     case Opcode.OpEvalLocalArrayRefCached:
                     case Opcode.OpSafeSetVariableFieldCached:
-                    case Opcode.OpScriptMethodChildThreadCallPointer:
                     case Opcode.OpEvalLocalVariableCached:
                     case Opcode.OpSafeSetWaittillVariableFieldCached:
-                    case Opcode.OpScriptThreadCallPointer:
                     case Opcode.OpCreateLocalVariable:
                     case Opcode.OpEvalLocalVariableObjectCached:
-                    case Opcode.OpCallBuiltinMethodPointer:
                     case Opcode.OpEvalLocalArrayCached:
+                    {
+                        int index = funcStream.ReadByte();
+                        instructionData.AddData(index);
+                        instructionData.DataString = $"index = {index}";
+                    }
+                        break;
+
                     case Opcode.OpScriptChildThreadCallPointer:
-                        funcStream.ReadByte();
+                    case Opcode.OpCallBuiltinMethodPointer:
+                    case Opcode.OpCallBuiltinPointer:
+                    case Opcode.OpScriptMethodThreadCallPointer:
+                    case Opcode.OpScriptMethodChildThreadCallPointer:
+                    case Opcode.OpScriptThreadCallPointer:
+                    {
+                        int numOfParams = funcStream.ReadByte();
+                        instructionData.AddData(numOfParams);
+                        instructionData.DataString = $"parameters count = {numOfParams}";
+                    }
                         break;
 
                     case Opcode.OpGetByte:
