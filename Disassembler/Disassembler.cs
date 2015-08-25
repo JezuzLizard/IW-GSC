@@ -143,7 +143,9 @@ namespace Disassembler
                         break;
 
                     case Opcode.OpGetFloat:
-                        funcStream.ReadSingle();
+                        float f = funcStream.ReadSingle();
+                        instructionData.AddData(f);
+                        instructionData.DataString = $"value = {f}";
                         break;
                     case Opcode.OpScriptLocalThreadCall:
                     case Opcode.OpSwitch:
