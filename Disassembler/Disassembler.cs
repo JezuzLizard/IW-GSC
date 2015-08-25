@@ -168,12 +168,15 @@ namespace Disassembler
                         funcStream.ReadBytes(12);
                         break;
 
-                    case Opcode.OpCallBuiltin:
+                    
                     case Opcode.OpScriptLocalMethodCall:
                     case Opcode.OpScriptLocalFunctionCall:
                     case Opcode.OpScriptLocalFunctionCall2:
                     case Opcode.OpGetLocalFunction:
+                        DissassembleLocalCall(instructionData, funcStream, instruction.Index);
+                        break;
                     case Opcode.OpCallBuiltinMethod:
+                    case Opcode.OpCallBuiltin:
                         funcStream.ReadBytes(3);
                         break;
 
@@ -266,6 +269,16 @@ namespace Disassembler
                 instructions.Add(instruction);
             }
             return instructions;
+        }
+
+        private void DissassembleLocalCall(InstructionData instructionData, BinaryReader funcStream, int currentIndex)
+        {
+            byte[] initial = new byte[4];
+            Array.Copy(funcStream.ReadBytes(3), initial, 3);
+            int offset = BitConverter.ToInt32(initial, 0);
+            offset = offset << 8 >> 10;
+            instructionData.AddData(offset);
+            instructionData.DataString = $"pointer to call = 0x{offset + currentIndex + 1:X}, offset = {offset}";
         }
 
         private void DisassembleFarCall(InstructionData instructionData)
