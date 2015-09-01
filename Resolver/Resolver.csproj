@@ -47,6 +47,8 @@
     <Compile Include="BaseResolver.cs" />
     <Compile Include="DebugResolver.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="Models\ResolverGamesModel.cs" />
+    <Compile Include="Models\ResolverMainStructureModel.cs" />
     <Compile Include="Opcode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -54,6 +56,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ResolverImpl.cs" />
+    <Compile Include="Models\ResolverModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -64,6 +68,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Resources\debug_opcodes.json" />
+    <None Include="Resources\j_main.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

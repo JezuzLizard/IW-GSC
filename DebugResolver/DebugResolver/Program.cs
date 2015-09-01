@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
 using System.IO;
+using Resolver;
 
 
 namespace DebugResolver
@@ -29,16 +29,18 @@ namespace DebugResolver
             }*/
 
 
-            string json = File.ReadAllText(@"C:\Users\Justin\Desktop\Other Files\GSC.json");
-            Target newTarget = JsonConvert.DeserializeObject<Target>(json);
-            Console.Write(newTarget);
-
+            //string json = File.ReadAllText(@"C:\Users\Justin\Desktop\Other Files\GSC.json");
+            //Target newTarget = JsonConvert.DeserializeObject<Target>(json);
+            //Console.Write(newTarget);
+            
         }
 
         static void Main(string[] args)
         {
-            BaseResolver(false, 0);
-            Console.ReadKey();
+            //BaseResolver(false, 0);
+            //Console.ReadKey();
+            var resolver = new ResolverImpl(false, Game.Ghosts);
+
         }
     }
 }

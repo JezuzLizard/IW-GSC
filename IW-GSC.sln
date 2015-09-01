@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Injector", "Injector\Inject
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DIsassembler.Console", "DIsassembler.Console\DIsassembler.Console.csproj", "{FA73FF49-906E-4A31-847B-CBF6B6BD82C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugResolver", "DebugResolver\DebugResolver\DebugResolver.csproj", "{43B26A37-C366-4D90-8191-1BD50B07B7D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,14 @@ Global
 		{FA73FF49-906E-4A31-847B-CBF6B6BD82C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA73FF49-906E-4A31-847B-CBF6B6BD82C2}.Release|x64.ActiveCfg = Release|Any CPU
 		{FA73FF49-906E-4A31-847B-CBF6B6BD82C2}.Release|x64.Build.0 = Release|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Debug|x64.Build.0 = Debug|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Release|x64.ActiveCfg = Release|Any CPU
+		{43B26A37-C366-4D90-8191-1BD50B07B7D8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

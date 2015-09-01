@@ -69,5 +69,15 @@ namespace Resolver.Properties {
                 return ((byte[])(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] j_main {
+            get {
+                object obj = ResourceManager.GetObject("j_main", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
