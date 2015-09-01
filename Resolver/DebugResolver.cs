@@ -9,6 +9,7 @@ namespace Resolver
 {
     public class DebugResolver : BaseResolver
     {
+
         private readonly Dictionary<byte, Opcode> _opcodes;
 
         public DebugResolver(bool console, Game game) : base(console, game)
