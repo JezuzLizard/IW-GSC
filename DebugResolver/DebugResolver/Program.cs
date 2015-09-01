@@ -10,22 +10,9 @@ namespace DebugResolver
 {
     class Program
     {
-        public class NameAndId
-        {
-            public string name;
-            public int id;
-        }
-
-        public class Data
-        {
-            public NameAndId[] data;
-        }
-
         public class Target
         {
             public string fields;
-            public NameAndId from;
-            public Data likes;
         }
 
         //private readonly Dictionary<byte, Opcode> _opcodes;
@@ -44,7 +31,7 @@ namespace DebugResolver
 
             string json = File.ReadAllText(@"C:\Users\Justin\Desktop\Other Files\GSC.json");
             Target newTarget = JsonConvert.DeserializeObject<Target>(json);
-            Console.Write(newTarget.from.id);
+            Console.Write(newTarget);
 
         }
 

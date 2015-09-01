@@ -24,7 +24,6 @@ namespace Resolver
             Console = console;
             Game = game;
 
-            /*
             _opcodes = new Dictionary<byte, Opcode>();
             var opcodesContent = Encoding.ASCII.GetString(Resources.debug_opcodes);
             var opcodesIds = JsonConvert.DeserializeObject<byte[]>(opcodesContent);
@@ -36,14 +35,6 @@ namespace Resolver
 
             string deserializedObject = JsonConvert.DeserializeObject<string>(File.ReadAllText(@"C:\Users\Justin\Desktop\Other Files\GSC.json"));
             string serializedObject = "";
-            */
-            using (StreamReader file = File.OpenText(@"C:\Users\Justin\Desktop\Other Files\GSC.json"))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializedObject = (string)serializer.Deserialize(file, typeof(string));
-            }
-            System.Console.WriteLine(deserializedObject);
-            System.Console.WriteLine(serializedObject);
         }
 
         public abstract byte ResolveIdOfOpcode(Opcode opcode);
