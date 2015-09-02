@@ -17,7 +17,7 @@ namespace Compiler.Console
                 {
                     return;
                 }
-                var compiler = new ScriptCompiler(dialog.FileName, new DebugResolver(false, Game.Ghosts));
+                var compiler = new ScriptCompiler(dialog.FileName, new BaseResolver(false, Game.Ghosts));
                 var result = compiler.CompileToByteArray();
                 var fileNameWithoutExtension = Path.Combine(Path.GetDirectoryName(dialog.FileName), Path.GetFileNameWithoutExtension(dialog.FileName));
                 string compiledFileName = fileNameWithoutExtension + ".xasset";

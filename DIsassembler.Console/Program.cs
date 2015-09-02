@@ -20,7 +20,7 @@ namespace DIsassembler.Console
                 {
                     return;
                 }
-                var disassembler = new Disassembler.Disassembler(new DebugResolver(false, Game.Ghosts), dialog.FileName);
+                var disassembler = new Disassembler.Disassembler(new BaseResolver(false, Game.Ghosts), dialog.FileName);
                 var path = Path.Combine(Path.GetDirectoryName(dialog.FileName), Path.GetFileNameWithoutExtension(dialog.FileName));
                 using (var writer = new StreamWriter(path + ".txt"))
                 {

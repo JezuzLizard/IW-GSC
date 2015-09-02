@@ -46,7 +46,7 @@ namespace Disassembler
                 var functionNameId = _buffer.ReadUInt16();
                 function.Name = functionNameId == 0
                     ? _buffer.ReadTerminatedString()
-                    : _resolver.ResolveStringById(functionNameId);
+                    : _resolver.ResolveStringNamegById(functionNameId);
 
                 if (functionLength > 512000)
                 {
@@ -365,9 +365,9 @@ namespace Disassembler
         private void DisassembleFarCall(InstructionData instructionData, BinaryReader funcStream, bool thread)
         {
             var fileNameId = _buffer.ReadUInt16();
-            var fileName = fileNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(fileNameId);
+            var fileName = fileNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringNamegById(fileNameId);
             var funcNameId = _buffer.ReadUInt16();
-            var funcName = funcNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringById(funcNameId);
+            var funcName = funcNameId == 0 ? _buffer.ReadTerminatedString() : _resolver.ResolveStringNamegById(funcNameId);
             instructionData.AddData(fileName);
             instructionData.AddData(funcName);
             funcStream.ReadBytes(3);

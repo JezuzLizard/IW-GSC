@@ -1,38 +1,140 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Text;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
+using Resolver.Models;
 using Resolver.Properties;
-using System.IO;
+using System;
 
 namespace Resolver
 {
     /// <summary>
     ///     Resolver should inherit this class
     /// </summary>
-   
 
-    public abstract class BaseResolver
+
+    public class BaseResolver
     {
         protected readonly bool Console;
         protected readonly Game Game;
-        
-        protected BaseResolver(bool console, Game game)
+
+        private ResolverModel mainModel;
+        private ResolverGamesModel systemModel;
+        private ResolverMainStructureModel gameModel;
+
+        /*
+        private readonly Dictionary<byte, Opcode> _opcodes;
+
+        public DebugResolver(bool console, Game game) : base(console, game)
+        {
+            _opcodes = new Dictionary<byte, Opcode>();
+            var opcodesContent = Encoding.ASCII.GetString(Resources.debug_opcodes);
+            var opcodesIds = JsonConvert.DeserializeObject<byte[]>(opcodesContent);
+            for (var index = 0; index < Enum.GetValues(typeof (Opcode)).Length; index++)
+            {
+                var value = Enum.GetValues(typeof (Opcode)).GetValue(index);
+                _opcodes[opcodesIds[index]] = (Opcode) value;
+            }
+        }
+
+        public override byte ResolveIdOfOpcode(Opcode opcode)
+        {
+            return _opcodes.FirstOrDefault(e => e.Value == opcode).Key;
+        }
+        */
+
+        public BaseResolver(bool console, Game game)
         {
             Console = console;
             Game = game;
+
+            var text = Encoding.ASCII.GetString(Resources.j_main);
+            mainModel = JsonConvert.DeserializeObject<ResolverModel>(text);
+
+            systemModel = mainModel.PC;
+            if (console)
+                systemModel = mainModel.Console;
+
+            switch(game)
+            {
+                case Game.Ghosts:
+                    gameModel = systemModel.Ghosts;
+                    break;
+                case Game.MW3:
+                    break;
+                case Game.AW:
+                    break;
+            }
         }
 
-        public abstract byte ResolveIdOfOpcode(Opcode opcode);
-        public abstract ushort ResolveIdOfMethod(string method);
-        public abstract ushort ResolveIdOfFunction(string function);
-        public abstract ushort ResolveIdOfField(string field);
-        public abstract ushort ResolveIdOfString(string s);
-        public abstract Opcode ResolveOpcodeById(byte value);
-        public abstract string ResolveMethodNameById(ushort value);
-        public abstract string ResolveFunctionNameById(ushort value);
-        public abstract string ResolveFieldNameById(ushort value);
-        public abstract string ResolveStringById(ushort value);
+        public byte ResolveIdOfOpcode(Opcode opcode)
+        {
+            return (byte)gameModel.OPCodes.FirstOrDefault(e => e.Key == Enum.GetName(typeof(Opcode), opcode)).Value;
+        }
+
+        public byte ResolveIdOfOpcodeString(string opcode)
+        {
+            return (byte)gameModel.OPCodes.FirstOrDefault(e => e.Key == opcode).Value;
+        }
+
+        public ushort ResolveIdOfMethod(string method)
+        {
+            return gameModel.Methods.FirstOrDefault(e => e.Key == method).Value;
+        }
+
+        public ushort ResolveIdOfFunction(string function)
+        {
+            return gameModel.Functions.FirstOrDefault(e => e.Key == function).Value;
+        }
+
+        public ushort ResolveIdOfField(string field)
+        {
+            return gameModel.Fields.FirstOrDefault(e => e.Key == field).Value;
+        }
+
+        public ushort ResolveIdOfString(string s)
+        {
+            return 0;
+        }
+
+        public Opcode ResolveOpcodeById(byte opcode)
+        {
+            Opcode result = 0;
+            Enum.TryParse<Opcode>(ResolveOpcodeNameById(opcode), out result);
+            return result;
+        }
+
+        public Opcode ResolveOpcodes()
+        {
+            Opcode result = 0;
+            foreach (var opcode in gameModel.OPCodes)
+            {
+                Enum.TryParse<Opcode>(opcode.Key, out result);
+            }
+            return result;
+        }
+
+        public string ResolveOpcodeNameById(ushort value)
+        {
+            return gameModel.OPCodes.FirstOrDefault(e => e.Value == value).Key;
+        }
+
+        public string ResolveMethodNameById(ushort value)
+        {
+            return gameModel.Methods.FirstOrDefault(e => e.Value == value).Key;
+        }
+        public string ResolveFunctionNameById(ushort value)
+        {
+            return gameModel.Functions.FirstOrDefault(e => e.Value == value).Key;
+        }
+    
+        public string ResolveFieldNameById(ushort value)
+        {
+            return gameModel.Fields.FirstOrDefault(e => e.Value == value).Key;
+        }
+
+        public string ResolveStringNamegById(ushort value)
+        {
+            return "Not Implemented";
+        }
     }
 }

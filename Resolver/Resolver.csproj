@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseResolver.cs" />
-    <Compile Include="DebugResolver.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Models\ResolverGamesModel.cs" />
     <Compile Include="Models\ResolverMainStructureModel.cs" />
@@ -56,7 +55,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ResolverImpl.cs" />
     <Compile Include="Models\ResolverModel.cs" />
   </ItemGroup>
   <ItemGroup>

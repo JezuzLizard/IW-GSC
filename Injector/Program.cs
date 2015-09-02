@@ -31,7 +31,7 @@ namespace Injector
                 {
                     return;
                 }
-                var compiledFile = new ScriptCompiler(dialog.FileName, new DebugResolver(false, Resolver.Game.Ghosts)).CompileToAsset();
+                var compiledFile = new ScriptCompiler(dialog.FileName, new BaseResolver(false, Resolver.Game.Ghosts)).CompileToAsset();
                 scriptFile.Buffer = compiledFile.Buffer;
                 scriptFile.ByteCode = compiledFile.ByteCode;
                 scriptFile.Length = compiledFile.UncompressedLength;
