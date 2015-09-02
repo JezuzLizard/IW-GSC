@@ -21,27 +21,6 @@ namespace Resolver
         private ResolverGamesModel systemModel;
         private ResolverMainStructureModel gameModel;
 
-        /*
-        private readonly Dictionary<byte, Opcode> _opcodes;
-
-        public DebugResolver(bool console, Game game) : base(console, game)
-        {
-            _opcodes = new Dictionary<byte, Opcode>();
-            var opcodesContent = Encoding.ASCII.GetString(Resources.debug_opcodes);
-            var opcodesIds = JsonConvert.DeserializeObject<byte[]>(opcodesContent);
-            for (var index = 0; index < Enum.GetValues(typeof (Opcode)).Length; index++)
-            {
-                var value = Enum.GetValues(typeof (Opcode)).GetValue(index);
-                _opcodes[opcodesIds[index]] = (Opcode) value;
-            }
-        }
-
-        public override byte ResolveIdOfOpcode(Opcode opcode)
-        {
-            return _opcodes.FirstOrDefault(e => e.Value == opcode).Key;
-        }
-        */
-
         public BaseResolver(bool console, Game game)
         {
             Console = console;
