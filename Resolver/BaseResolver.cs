@@ -72,7 +72,7 @@ namespace Resolver
 
         public ushort ResolveIdOfString(string s)
         {
-            return 0;
+            return gameModel.Strings.FirstOrDefault(e => e.Key == s).Value;
         }
 
         public Opcode ResolveOpcodeById(byte opcode)
@@ -113,7 +113,7 @@ namespace Resolver
 
         public string ResolveStringNamegById(ushort value)
         {
-            return "Not Implemented";
+            return gameModel.Strings.FirstOrDefault(e => e.Value == value).Key;
         }
     }
 }
